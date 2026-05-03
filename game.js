@@ -1300,6 +1300,63 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') hideHistoryModal();
 });
 
+// ============ チュートリアル ============
+const TUTORIAL_KEY = 'cookingGameTutorialSeen_v1';
+const TUTORIAL_TOTAL_STEPS = 4;
+let tutorialStep = 1;
+
+function hasSeenTutorial() {
+  if (!STORAGE_OK) return false;
+  try { return localStorage.getItem(TUTORIAL_KEY) === '1'; }
+  catch (e) { return false; }
+}
+function markTutorialSeen() {
+  if (!STORAGE_OK) return;
+  try { localStorage.setItem(TUTORIAL_KEY, '1'); } catch (e) {}
+}
+
+function showTutorialStep(n) {
+  tutorialStep = Math.max(1, Math.min(TUTORIAL_TOTAL_STEPS, n));
+  $$('.tutorial-step').forEach(el => {
+    el.hidden = parseInt(el.dataset.step, 10) !== tutorialStep;
+  });
+  $$('.tutorial-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i + 1 === tutorialStep);
+    dot.classList.toggle('done',   i + 1 <  tutorialStep);
+  });
+  $('#tutorial-prev').hidden = tutorialStep === 1;
+  $('#tutorial-next').textContent = tutorialStep === TUTORIAL_TOTAL_STEPS ? 'はじめる！' : 'つぎへ →';
+}
+
+function showTutorial() {
+  tutorialStep = 1;
+  showTutorialStep(1);
+  const overlay = $('#tutorial-overlay');
+  overlay.classList.add('active');
+  overlay.setAttribute('aria-hidden', 'false');
+}
+function hideTutorial() {
+  const overlay = $('#tutorial-overlay');
+  overlay.classList.remove('active');
+  overlay.setAttribute('aria-hidden', 'true');
+  markTutorialSeen();
+}
+
+$('#tutorial-next').addEventListener('click', () => {
+  if (tutorialStep >= TUTORIAL_TOTAL_STEPS) hideTutorial();
+  else showTutorialStep(tutorialStep + 1);
+});
+$('#tutorial-prev').addEventListener('click', () => showTutorialStep(tutorialStep - 1));
+$('#tutorial-skip').addEventListener('click', hideTutorial);
+$('#btn-howto').addEventListener('click', showTutorial);
+document.addEventListener('keydown', e => {
+  if (!$('#tutorial-overlay').classList.contains('active')) return;
+  if (e.key === 'Escape') hideTutorial();
+  else if (e.key === 'ArrowRight') $('#tutorial-next').click();
+  else if (e.key === 'ArrowLeft' && tutorialStep > 1) showTutorialStep(tutorialStep - 1);
+});
+
 // ============ 初期化 ============
 renderTools();
 goTo('title');
+if (!hasSeenTutorial()) showTutorial();

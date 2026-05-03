@@ -41,6 +41,10 @@
           <span class="big-btn__icon">📖</span>
           <span>りれきを みる</span>
         </button>
+        <button class="big-btn big-btn--howto" id="btn-howto">
+          <span class="big-btn__icon">📚</span>
+          <span>あそびかた</span>
+        </button>
         <p class="title-tip">どうぐ → ぐざい → ちょうみりょう → じかん で りょうりかんせい！</p>
       </div>
     </section>
@@ -213,6 +217,43 @@
 
   <!-- ドラッグ中の幽霊要素 -->
   <div class="ghost-drag" id="ghost-drag"></div>
+
+  <!-- ===== チュートリアル オーバーレイ ===== -->
+  <div class="tutorial-overlay" id="tutorial-overlay" aria-hidden="true">
+    <div class="tutorial-card" role="dialog" aria-labelledby="tutorial-heading">
+      <div class="tutorial-progress" id="tutorial-progress">
+        <span class="tutorial-dot active"></span>
+        <span class="tutorial-dot"></span>
+        <span class="tutorial-dot"></span>
+        <span class="tutorial-dot"></span>
+      </div>
+      <div class="tutorial-step" data-step="1">
+        <div class="tutorial-emoji">🍳</div>
+        <h3 id="tutorial-heading">1. どうぐを えらぼう</h3>
+        <p>フライパン・なべ・トースターなど、つかいたい どうぐを 1つ タップして えらぶよ。</p>
+      </div>
+      <div class="tutorial-step" data-step="2" hidden>
+        <div class="tutorial-emoji">🥬</div>
+        <h3>2. ぐざいを なべに いれよう</h3>
+        <p>したの えを タップ、または ドラッグ＆ドロップで なべに いれよう。<br/>まちがえたら なべの なかみを タップで とりだせるよ。</p>
+      </div>
+      <div class="tutorial-step" data-step="3" hidden>
+        <div class="tutorial-emoji">🧂</div>
+        <h3>3. ちょうみりょうを いれよう</h3>
+        <p>しお・しょうゆ・バターなどを いれると おいしくなるよ。<br/>なくても OK！</p>
+      </div>
+      <div class="tutorial-step" data-step="4" hidden>
+        <div class="tutorial-emoji">⏰</div>
+        <h3>4. じかんを きめて クッキング！</h3>
+        <p>みじかすぎると なまやけ、ながすぎると こげちゃう。<br/>ちょうどいい じかんを みつけよう！</p>
+      </div>
+      <div class="tutorial-actions">
+        <button class="nav-btn" id="tutorial-skip">スキップ</button>
+        <button class="nav-btn" id="tutorial-prev" hidden>← もどる</button>
+        <button class="nav-btn nav-btn--primary" id="tutorial-next">つぎへ →</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 履歴詳細モーダル -->
   <div class="history-modal" id="history-modal">

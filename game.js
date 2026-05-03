@@ -812,6 +812,7 @@ function attachItemHandlers(palette, stateKey) {
   // ポインターベースのドラッグ
   $$('.item-card', palette).forEach(card => {
     let dragging = false;
+    let scrolling = false; // 縦スクロール意図と判明したらドラッグを諦める
     let startX = 0, startY = 0;
     let pointerId = null;
 
@@ -819,19 +820,31 @@ function attachItemHandlers(palette, stateKey) {
       pointerId = e.pointerId;
       card.setPointerCapture?.(pointerId);
       dragging = false;
+      scrolling = false;
       startX = e.clientX;
       startY = e.clientY;
     };
 
     const onMove = (e) => {
       if (e.pointerId !== pointerId) return;
+      if (scrolling) return;
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
-      if (!dragging && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
-        dragging = true;
-        card.classList.add('dragging');
-        ghost.textContent = card.dataset.emoji;
-        ghost.classList.add('active');
+      const adx = Math.abs(dx);
+      const ady = Math.abs(dy);
+      if (!dragging) {
+        // 縦スクロール意図を優先（タッチ操作で誤ドラッグを防ぐ）
+        if (e.pointerType === 'touch' && ady > 8 && ady > adx * 1.4) {
+          scrolling = true;
+          card.releasePointerCapture?.(pointerId);
+          return;
+        }
+        if (adx > 8 || ady > 8) {
+          dragging = true;
+          card.classList.add('dragging');
+          ghost.textContent = card.dataset.emoji;
+          ghost.classList.add('active');
+        }
       }
       if (dragging) {
         ghost.style.left = e.clientX + 'px';
@@ -857,7 +870,9 @@ function attachItemHandlers(palette, stateKey) {
         e.clientX >= rect.left && e.clientX <= rect.right &&
         e.clientY >= rect.top  && e.clientY <= rect.bottom;
 
-      if (dragging && inside) {
+      if (scrolling) {
+        // スクロール扱い: 何もしない
+      } else if (dragging && inside) {
         if (triggerAdd(card.dataset.id)) sparkleAt(stage);
       } else if (!dragging) {
         // タップ＝追加
@@ -865,6 +880,7 @@ function attachItemHandlers(palette, stateKey) {
       }
 
       dragging = false;
+      scrolling = false;
       pointerId = null;
     };
 

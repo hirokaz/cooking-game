@@ -1234,8 +1234,9 @@ body {
 .result-actions {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 14px;
   flex-wrap: wrap;
+  margin-top: 6px;
 }
 
 /* 紙吹雪 */
@@ -1874,4 +1875,160 @@ body, .app, .judge__name, .judge__comment, .history-item__name,
   .judge__score { font-size: 18px; padding: 3px 8px; }
   .toast { font-size: 13px; padding: 10px 16px; bottom: 16px; }
   .tutorial-card { padding: 18px 16px 16px; }
+}
+
+/* ============================================
+   モバイル UX: タップ目標 44px、ボタン間隔、touch-action
+   ============================================ */
+
+/* iOS の 300ms タップ遅延 / ダブルタップズームを回避 */
+button,
+.tool-card,
+.item-card,
+.history-item,
+.tutorial-dot,
+.score-breakdown summary,
+.cook-tool__contents .item-chip {
+  touch-action: manipulation;
+}
+
+/* 食材カードは縦スクロールを邪魔しないように pan-y のみ許容 */
+.item-card {
+  touch-action: pan-y;
+}
+
+/* タイトル画面のボタンを縦積みで均等に */
+.title-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0 6px;
+}
+.title-actions .big-btn {
+  margin: 0; /* 個別 margin-top を打ち消し */
+  width: min(100%, 320px);
+  justify-content: center;
+}
+
+/* なべの中身チップ: タップ目標 ≥44px、モバイルでは ✕ を常時表示 */
+.cook-tool__contents .item-chip {
+  padding: 8px 12px;
+  min-width: 48px;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (hover: none) {
+  .cook-tool__contents .item-chip::after {
+    content: "✕";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: var(--c-tomato);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--c-ink);
+    font-size: 12px;
+    font-weight: 900;
+    display: grid;
+    place-items: center;
+    -webkit-text-stroke: 0;
+    pointer-events: none;
+  }
+  .cook-tool__contents .item-chip.removing::after { display: none; }
+}
+
+/* ぜんぶもどすボタン: 高さ ≥44px */
+.reset-btn {
+  min-height: 44px;
+  padding: 10px 18px;
+  font-size: 14px;
+}
+
+/* 履歴モーダル閉じるボタン: 44x44 */
+.history-modal__close {
+  width: 44px;
+  height: 44px;
+  font-size: 20px;
+}
+
+/* スコアの ないわけ サマリー: タップしやすい余白 */
+.score-breakdown summary {
+  padding: 8px 4px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* チュートリアルアクション間隔 */
+.tutorial-actions { gap: 14px; }
+
+/* ステップ ナビゲーションの間隔 */
+.screen-footer { gap: 14px; }
+
+/* 時間コントロール: 改行時の縦間隔 */
+.time-controls { row-gap: 12px; column-gap: 10px; }
+
+/* nav-btn / big-btn / time-btn / reset-btn / tool-card のタップ目標を保証 */
+.nav-btn { min-height: 46px; }
+.big-btn { min-height: 52px; }
+.time-btn { min-width: 56px; min-height: 50px; }
+
+/* 履歴アイテム: モバイルで :active のフラッシュをわかりやすく */
+.history-item:active {
+  background: rgba(255, 201, 60, 0.25);
+}
+
+/* 360px 以下の再調整: 押せる大きさを保ちつつ詰める */
+@media (max-width: 360px) {
+  .nav-btn {
+    padding: 12px 16px;
+    font-size: 15px;
+    min-height: 46px;
+  }
+  .big-btn { padding: 14px 22px; min-height: 50px; }
+  .reset-btn { padding: 10px 14px; font-size: 13px; }
+  .title-actions .big-btn { width: 100%; }
+}
+
+/* タッチデバイス向け: スライダーのサムを大きく押しやすく */
+@media (pointer: coarse) {
+  .time-slider {
+    height: 18px;
+  }
+  .time-slider::-webkit-slider-thumb {
+    width: 38px;
+    height: 38px;
+  }
+  .time-slider::-moz-range-thumb {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+/* iOS のセーフエリア（ノッチ・ホームインジケーター）対応 */
+@supports (padding: max(0px)) {
+  .app {
+    padding-left:  max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-bottom: max(40px, calc(env(safe-area-inset-bottom) + 24px));
+  }
+  .toast {
+    bottom: max(24px, calc(env(safe-area-inset-bottom) + 12px));
+  }
+}
+
+/* キーボード操作時のフォーカスリング（kids 向けでも壊れた見た目を避ける） */
+button:focus-visible,
+.tool-card:focus-visible,
+.item-card:focus-visible,
+.history-item:focus-visible {
+  outline: 3px solid var(--c-sky);
+  outline-offset: 3px;
 }

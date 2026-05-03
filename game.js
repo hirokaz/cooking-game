@@ -390,6 +390,54 @@ const locks = {
   cooking: false,      // クッキングスタート中
 };
 
+// ===== トースト =====
+let toastTimer = null;
+function showToast(msg, duration = 1800) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('active');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('active'), duration);
+}
+
+// ===== 効果音 (WebAudio) =====
+let audioCtx = null;
+function ensureAudio() {
+  if (audioCtx) return audioCtx;
+  try {
+    const Ctor = window.AudioContext || window.webkitAudioContext;
+    if (Ctor) audioCtx = new Ctor();
+  } catch (e) { audioCtx = null; }
+  return audioCtx;
+}
+function playPop() {
+  const ctx = ensureAudio();
+  if (!ctx) return;
+  if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+  const t = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(520, t);
+  osc.frequency.exponentialRampToValueAtTime(960, t + 0.09);
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(0.18, t + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.2);
+}
+
+// ===== 拒否シェイク =====
+function shakeDeny(el) {
+  if (!el) return;
+  el.classList.remove('shake-deny');
+  void el.offsetWidth;
+  el.classList.add('shake-deny');
+  setTimeout(() => el.classList.remove('shake-deny'), 400);
+}
+
 // ============ ユーティリティ ============
 const $  = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -500,6 +548,26 @@ function pulseWhenEnabled(btn, prevDisabled) {
   setTimeout(() => btn.classList.remove('ready-pulse'), 1500);
 }
 
+// 結果画面のスコアを 0 → score にカウントアップ
+function countUpScore(target, duration = 720) {
+  const el = $('#result-score');
+  if (!el) return;
+  const start = performance.now();
+  function tick(now) {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = Math.round(target * eased);
+    if (t < 1) requestAnimationFrame(tick);
+    else {
+      el.textContent = target;
+      el.classList.remove('counting');
+      void el.offsetWidth;
+      el.classList.add('counting');
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
 function refreshContents(suffix) {
   const list = suffix === 'ing' ? state.ingredients : [...state.ingredients, ...state.seasonings];
   const el = $(`#cook-tool-contents-${suffix}`);
@@ -608,15 +676,16 @@ function updatePaletteCounts(palette, list) {
   });
 }
 
-// アイテム → 鍋 へ追加
+// アイテム → 鍋 へ追加（追加できれば true、上限到達なら false）
 function addItem(stateKey, id) {
   const source = stateKey === 'ingredients' ? INGREDIENTS : SEASONINGS;
   const data = getById(source, id);
-  if (!data) return;
+  if (!data) return false;
   const list = state[stateKey];
   // 同じ食材は最大3個まで
-  if (list.filter(x => x.id === id).length >= 3) return;
+  if (list.filter(x => x.id === id).length >= 3) return false;
   list.push({ id: data.id, name: data.name, emoji: data.emoji });
+  return true;
 }
 
 function removeOneItem(stateKey, id) {
@@ -632,7 +701,14 @@ function attachItemHandlers(palette, stateKey) {
 
   // 共通の追加処理
   const triggerAdd = (id) => {
-    addItem(stateKey, id);
+    const added = addItem(stateKey, id);
+    if (!added) {
+      const item = getById(stateKey === 'ingredients' ? INGREDIENTS : SEASONINGS, id);
+      const label = item ? item.name : '';
+      showToast(`${label}は これいじょう いれられないよ`);
+      return false;
+    }
+    playPop();
     refreshContents(suffix);
     updatePaletteCounts(palette, state[stateKey]);
     // ボタン状態
@@ -643,6 +719,7 @@ function attachItemHandlers(palette, stateKey) {
       pulseWhenEnabled(next, wasDisabled);
     }
     updateTargetHint(suffix);
+    return true;
   };
 
   // ポインターベースのドラッグ
@@ -694,12 +771,10 @@ function attachItemHandlers(palette, stateKey) {
         e.clientY >= rect.top  && e.clientY <= rect.bottom;
 
       if (dragging && inside) {
-        triggerAdd(card.dataset.id);
-        sparkleAt(stage);
+        if (triggerAdd(card.dataset.id)) sparkleAt(stage);
       } else if (!dragging) {
         // タップ＝追加
-        triggerAdd(card.dataset.id);
-        sparkleAt(stage);
+        if (triggerAdd(card.dataset.id)) sparkleAt(stage);
       }
 
       dragging = false;
@@ -1026,7 +1101,7 @@ function finishCooking() {
   $('#result-card').classList.toggle('fail', isFail);
   $('#result-card').classList.toggle('miracle', score === 100);
 
-  $('#result-score').textContent = score;
+  countUpScore(score);
 
   // ★表示
   const stars = Math.round(score / 20);
@@ -1355,6 +1430,21 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'ArrowRight') $('#tutorial-next').click();
   else if (e.key === 'ArrowLeft' && tutorialStep > 1) showTutorialStep(tutorialStep - 1);
 });
+
+// 無効ボタンを押したときに shake してメッセージを出す（無反応の解消）
+document.addEventListener('pointerdown', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn || !btn.disabled) return;
+  shakeDeny(btn);
+  // ぐざい未追加で「つぎへ」
+  if (btn.id === 'btn-ing-next' && state.ingredients.length === 0) {
+    showToast('まずは ぐざいを なべに いれてね');
+  } else if (btn.id === 'btn-tool-next' && !state.tool) {
+    showToast('どうぐを えらんでね');
+  } else if (btn.id === 'btn-reset-ing' || btn.id === 'btn-reset-sea') {
+    // 何も入っていないので無反応はそのまま、見た目の shake のみ
+  }
+}, true);
 
 // ============ 初期化 ============
 renderTools();

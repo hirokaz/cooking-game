@@ -1705,3 +1705,51 @@ body {
   flex-wrap: wrap;
 }
 .tutorial-step[hidden] { display: none; }
+
+/* ============================================
+   トースト & 拒否シェイク & スコアカウントアップ
+   ============================================ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--c-ink);
+  color: white;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 15px;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  z-index: 200;
+  max-width: 90vw;
+  text-align: center;
+  -webkit-text-stroke: 0;
+}
+.toast.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.shake-deny {
+  animation: shake-deny 0.35s linear;
+}
+@keyframes shake-deny {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+.result-score__value.counting {
+  animation: score-bump 0.25s ease-out;
+}
+@keyframes score-bump {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}

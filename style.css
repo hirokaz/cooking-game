@@ -1820,3 +1820,58 @@ body {
   color: #6A4A2F;
   line-height: 1.5;
 }
+
+/* ============================================
+   UI ポリッシュ: 押下感・テキスト溢れ対策・320px対応
+   ============================================ */
+
+/* 日本語の不自然な分断を抑え、長い名前は溢れずに改行 */
+body, .app, .judge__name, .judge__comment, .history-item__name,
+.history-item__date, .result-name, .step-title,
+.detail-chip, .detail-judge__name, .detail-judge__comment,
+.tutorial-card p, .stat-card__label {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
+
+/* min-width:0 を要するflex子要素に追加（テキスト溢れの定番対策） */
+.history-item__body,
+.result-card,
+.result-judges,
+.detail-judge__body { min-width: 0; }
+
+/* 結果料理名・履歴名は1〜2行で切り詰め、極端に長い名前にも耐える */
+.result-name {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+.history-item__name {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* ボタン押下感の強化（アクティブ時の影と色のニュアンス） */
+.nav-btn:active:not(:disabled),
+.big-btn:active,
+.tool-card:active,
+.reset-btn:active:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+/* 320px〜375pxの極小幅でもナビボタンがはみ出さない */
+@media (max-width: 360px) {
+  .app { padding: 14px 12px 32px; }
+  .step-header { padding: 12px 14px; gap: 10px; }
+  .step-num { width: 42px; height: 42px; font-size: 24px; }
+  .nav-btn { padding: 10px 14px; font-size: 14px; }
+  .big-btn { padding: 14px 22px; }
+  .tool-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .palette { grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)) !important; }
+  .judge { padding: 8px; gap: 6px; }
+  .judge__avatar { font-size: 30px; }
+  .judge__score { font-size: 18px; padding: 3px 8px; }
+  .toast { font-size: 13px; padding: 10px 16px; bottom: 16px; }
+  .tutorial-card { padding: 18px 16px 16px; }
+}

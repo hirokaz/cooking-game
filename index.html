@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>クッキング キッズ ★ お料理ゲーム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800;900&family=Yusei+Magic&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 背景の装飾 -->
+  <div class="bg-decoration">
+    <span class="float-emoji" style="--x:8%;--y:12%;--d:0s">🍅</span>
+    <span class="float-emoji" style="--x:88%;--y:18%;--d:1.2s">🥕</span>
+    <span class="float-emoji" style="--x:5%;--y:80%;--d:2.4s">🥬</span>
+    <span class="float-emoji" style="--x:92%;--y:75%;--d:0.6s">🧀</span>
+    <span class="float-emoji" style="--x:50%;--y:5%;--d:1.8s">⭐</span>
+    <span class="float-emoji" style="--x:15%;--y:48%;--d:3s">🍞</span>
+    <span class="float-emoji" style="--x:85%;--y:50%;--d:2.1s">🥚</span>
+  </div>
+
+  <main class="app">
+
+    <!-- ===== タイトル画面 ===== -->
+    <section class="screen screen--title active" data-screen="title">
+      <div class="title-card">
+        <div class="title-mark">★</div>
+        <h1 class="title-main">
+          <span>ク</span><span>ッ</span><span>キ</span><span>ン</span><span>グ</span>
+          <br />
+          <span>キ</span><span>ッ</span><span>ズ</span>
+        </h1>
+        <p class="title-sub">じぶんだけの りょうりを つくろう！</p>
+        <button class="big-btn big-btn--start" id="btn-start">
+          <span class="big-btn__icon">🍳</span>
+          <span>はじめる</span>
+        </button>
+        <button class="big-btn big-btn--history" id="btn-history">
+          <span class="big-btn__icon">📖</span>
+          <span>りれきを みる</span>
+        </button>
+        <p class="title-tip">どうぐ → ぐざい → ちょうみりょう → じかん で りょうりかんせい！</p>
+      </div>
+    </section>
+
+    <!-- ===== Step1: 道具 ===== -->
+    <section class="screen" data-screen="tool">
+      <header class="step-header">
+        <div class="step-num">1</div>
+        <h2 class="step-title">どうぐを えらぼう！</h2>
+      </header>
+      <div class="tool-grid" id="tool-grid"></div>
+      <footer class="screen-footer">
+        <button class="nav-btn" id="btn-tool-back">← もどる</button>
+        <button class="nav-btn nav-btn--primary" id="btn-tool-next" disabled>つぎへ →</button>
+      </footer>
+    </section>
+
+    <!-- ===== Step2: 具材 ===== -->
+    <section class="screen" data-screen="ingredient">
+      <header class="step-header">
+        <div class="step-num">2</div>
+        <h2 class="step-title">ぐざいを いれよう！</h2>
+        <p class="step-hint">ドラッグ＆ドロップ または タップで いれる｜なべの なかの ぐざいを タップで とりだす</p>
+      </header>
+
+      <div class="cook-stage">
+        <div class="cook-tool" id="cook-tool-ing">
+          <div class="cook-tool__visual" id="cook-tool-visual-ing"></div>
+          <div class="cook-tool__contents" id="cook-tool-contents-ing"></div>
+          <div class="cook-tool__label" id="cook-tool-label-ing"></div>
+        </div>
+        <button class="reset-btn" id="btn-reset-ing" type="button">🔄 ぜんぶ もどす</button>
+      </div>
+
+      <div class="palette" id="ingredient-palette"></div>
+
+      <footer class="screen-footer">
+        <button class="nav-btn" id="btn-ing-back">← もどる</button>
+        <button class="nav-btn nav-btn--primary" id="btn-ing-next" disabled>つぎへ →</button>
+      </footer>
+    </section>
+
+    <!-- ===== Step3: 調味料 ===== -->
+    <section class="screen" data-screen="seasoning">
+      <header class="step-header">
+        <div class="step-num">3</div>
+        <h2 class="step-title">ちょうみりょうを いれよう！</h2>
+        <p class="step-hint">なくても OK｜なべの なかの ちょうみりょうを タップで とりだせる</p>
+      </header>
+
+      <div class="cook-stage">
+        <div class="cook-tool" id="cook-tool-sea">
+          <div class="cook-tool__visual" id="cook-tool-visual-sea"></div>
+          <div class="cook-tool__contents" id="cook-tool-contents-sea"></div>
+          <div class="cook-tool__label" id="cook-tool-label-sea"></div>
+        </div>
+        <button class="reset-btn" id="btn-reset-sea" type="button">🔄 ちょうみりょうを もどす</button>
+      </div>
+
+      <div class="palette" id="seasoning-palette"></div>
+
+      <footer class="screen-footer">
+        <button class="nav-btn" id="btn-sea-back">← もどる</button>
+        <button class="nav-btn nav-btn--primary" id="btn-sea-next">つぎへ →</button>
+      </footer>
+    </section>
+
+    <!-- ===== Step4: 時間 ===== -->
+    <section class="screen" data-screen="time">
+      <header class="step-header">
+        <div class="step-num">4</div>
+        <h2 class="step-title">なんぷん りょうりする？</h2>
+        <p class="step-hint">ながすぎると こげるよ！ みじかすぎると なまやけ！</p>
+      </header>
+
+      <div class="time-card">
+        <div class="time-display">
+          <span class="time-value" id="time-value">5</span>
+          <span class="time-unit">ふん</span>
+        </div>
+        <div class="time-controls">
+          <button class="time-btn time-btn--minus" data-delta="-1" aria-label="1ぷんへらす">－1</button>
+          <button class="time-btn time-btn--minus" data-delta="-5" aria-label="5ふんへらす">－5</button>
+          <input type="range" min="1" max="60" value="5" id="time-slider" class="time-slider" />
+          <button class="time-btn time-btn--plus" data-delta="1" aria-label="1ぷんふやす">＋1</button>
+          <button class="time-btn time-btn--plus" data-delta="5" aria-label="5ふんふやす">＋5</button>
+        </div>
+        <div class="time-meter">
+          <div class="time-meter__fill" id="time-meter-fill"></div>
+          <div class="time-meter__zone time-meter__zone--ok" id="time-meter-ok"></div>
+        </div>
+        <p class="time-hint" id="time-hint">ちょうどいい じかんを みつけよう</p>
+      </div>
+
+      <footer class="screen-footer">
+        <button class="nav-btn" id="btn-time-back">← もどる</button>
+        <button class="nav-btn nav-btn--start-cook" id="btn-cook-start">
+          <span>🔥</span> クッキング スタート！ <span>🔥</span>
+        </button>
+      </footer>
+    </section>
+
+    <!-- ===== Step5: 調理中 ===== -->
+    <section class="screen screen--cooking" data-screen="cooking">
+      <h2 class="cooking-title" id="cooking-title">クッキング ちゅう...</h2>
+      <div class="cooking-stage">
+        <div class="cooking-steam" aria-hidden="true">
+          <span>💨</span><span>💨</span><span>💨</span>
+        </div>
+        <div class="cooking-tool" id="cooking-tool">
+          <div class="cooking-tool__visual" id="cooking-tool-visual"></div>
+          <div class="cooking-tool__contents" id="cooking-tool-contents"></div>
+        </div>
+        <div class="cooking-fire" aria-hidden="true">
+          <span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span><span>🔥</span>
+        </div>
+      </div>
+      <div class="cooking-timer">
+        <div class="cooking-timer__bar"><div class="cooking-timer__fill" id="cooking-timer-fill"></div></div>
+        <div class="cooking-timer__text" id="cooking-timer-text">のこり 5ふん</div>
+      </div>
+    </section>
+
+    <!-- ===== Step6: 結果 ===== -->
+    <section class="screen screen--result" data-screen="result">
+      <div class="result-card" id="result-card">
+        <div class="result-banner" id="result-banner">かんせい！</div>
+        <div class="result-dish">
+          <div class="result-dish__plate">
+            <div class="result-dish__emoji" id="result-emoji">🍳</div>
+          </div>
+        </div>
+        <h2 class="result-name" id="result-name">めだまやき</h2>
+        <p class="result-recipe" id="result-recipe"></p>
+
+        <div class="result-judges" id="result-judges"></div>
+
+        <div class="result-score">
+          <span class="result-score__label">そうごうてん</span>
+          <span class="result-score__value" id="result-score">0</span>
+          <span class="result-score__max">/100</span>
+        </div>
+        <div class="result-stars" id="result-stars"></div>
+
+        <div class="result-actions">
+          <button class="nav-btn" id="btn-result-history">📖 りれき</button>
+          <button class="nav-btn nav-btn--primary" id="btn-again">もういちど あそぶ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 履歴画面 ===== -->
+    <section class="screen screen--history" data-screen="history">
+      <header class="step-header">
+        <div class="step-num">📖</div>
+        <h2 class="step-title">りょうり りれき</h2>
+      </header>
+
+      <div class="history-stats" id="history-stats"></div>
+
+      <div class="history-list" id="history-list"></div>
+
+      <footer class="screen-footer">
+        <button class="nav-btn" id="btn-history-back">← もどる</button>
+        <button class="nav-btn nav-btn--danger" id="btn-history-clear">ぜんぶ けす 🗑️</button>
+      </footer>
+    </section>
+
+  </main>
+
+  <!-- ドラッグ中の幽霊要素 -->
+  <div class="ghost-drag" id="ghost-drag"></div>
+
+  <!-- 履歴詳細モーダル -->
+  <div class="history-modal" id="history-modal">
+    <div class="history-modal__card" id="history-modal-card">
+      <button class="history-modal__close" id="history-modal-close" aria-label="とじる">✕</button>
+      <div class="history-modal__plate">
+        <div class="history-modal__emoji" id="hm-emoji">🍳</div>
+      </div>
+      <h2 class="history-modal__name" id="hm-name">--</h2>
+      <p class="history-modal__date" id="hm-date">--</p>
+      <div class="history-modal__score-row" id="hm-score-row">
+        <span class="num" id="hm-score">0</span>
+        <span class="max">/ 100てん</span>
+      </div>
+      <div class="history-modal__stars" id="hm-stars">☆☆☆☆☆</div>
+
+      <div class="detail-section">
+        <div class="detail-section__title">🔧 つかった どうぐ</div>
+        <div id="hm-tool" style="font-size:15px;"></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section__title">🥬 ぐざい</div>
+        <div class="detail-section__chips" id="hm-ingredients"></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section__title">🧂 ちょうみりょう</div>
+        <div class="detail-section__chips" id="hm-seasonings"></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section__title">⏰ じかん</div>
+        <div id="hm-time" style="font-size:15px;"></div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section__title">👨‍⚖️ しんさいんの こめんと</div>
+        <div class="detail-judges" id="hm-judges"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,1581 @@
+/* ============================================
+   クッキングキッズ - スタイル
+   絵本/ステッカー風ポップデザイン
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  --c-bg-1: #FFF4D6;
+  --c-bg-2: #FFD9A8;
+  --c-bg-3: #FFC1B6;
+  --c-cream: #FFF9EC;
+  --c-ink: #2B1B0F;
+  --c-tomato: #FF5A4E;
+  --c-leaf: #4CB668;
+  --c-sun: #FFC93C;
+  --c-sky: #5CC2E5;
+  --c-grape: #B069C8;
+  --c-pink: #FF92B0;
+  --c-shadow: rgba(43, 27, 15, 0.95);
+  --r-md: 18px;
+  --r-lg: 28px;
+  --r-xl: 40px;
+  --border: 4px solid var(--c-ink);
+  --hard-shadow: 0 6px 0 var(--c-ink);
+  --hard-shadow-sm: 0 4px 0 var(--c-ink);
+  --hard-shadow-lg: 0 8px 0 var(--c-ink);
+  font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "ヒラギノ丸ゴ ProN W4", sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background:
+    radial-gradient(circle at 15% 20%, #FFF6C7 0%, transparent 38%),
+    radial-gradient(circle at 85% 75%, #FFD2D8 0%, transparent 42%),
+    linear-gradient(135deg, var(--c-bg-1), var(--c-bg-2) 60%, var(--c-bg-3));
+  background-attachment: fixed;
+  color: var(--c-ink);
+  font-weight: 700;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* 背景の散らかった食材 */
+.bg-decoration {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.float-emoji {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  font-size: clamp(28px, 5vw, 54px);
+  filter: drop-shadow(2px 3px 0 rgba(43, 27, 15, 0.3));
+  opacity: 0.55;
+  animation: floaty 6s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50%      { transform: translateY(-14px) rotate(8deg); }
+}
+
+/* ====== 全体レイアウト ====== */
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 18px 16px 40px;
+  min-height: 100vh;
+}
+
+.screen {
+  display: none;
+  animation: screen-in 0.45s cubic-bezier(0.18, 0.95, 0.25, 1.25);
+}
+.screen.active { display: block; }
+
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* ====== タイトル画面 ====== */
+.screen--title {
+  display: none;
+  text-align: center;
+  padding-top: 4vh;
+}
+.screen--title.active { display: block; }
+
+.title-card {
+  background: var(--c-cream);
+  border: var(--border);
+  border-radius: var(--r-xl);
+  padding: 36px 24px 30px;
+  box-shadow: var(--hard-shadow-lg);
+  position: relative;
+  margin: 0 auto;
+  max-width: 560px;
+}
+.title-mark {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-8deg);
+  background: var(--c-sun);
+  border: var(--border);
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  font-size: 36px;
+  border-radius: 50%;
+  box-shadow: var(--hard-shadow-sm);
+}
+.title-main {
+  font-family: "Yusei Magic", "M PLUS Rounded 1c", sans-serif;
+  font-size: clamp(40px, 9vw, 68px);
+  margin: 18px 0 6px;
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  color: var(--c-tomato);
+  -webkit-text-stroke: 0;
+  text-shadow:
+    3px 3px 0 var(--c-ink),
+    -1px -1px 0 var(--c-ink),
+    1px -1px 0 var(--c-ink),
+    -1px 1px 0 var(--c-ink),
+    1px 1px 0 var(--c-ink);
+}
+.title-main span { display: inline-block; }
+.title-main span:nth-child(2n) { transform: translateY(-4px) rotate(-4deg); }
+.title-main span:nth-child(3n) { transform: translateY(2px) rotate(5deg); color: var(--c-sun); }
+.title-main span:nth-child(5n) { color: var(--c-leaf); }
+
+.title-sub {
+  font-size: clamp(16px, 4vw, 22px);
+  margin: 6px 0 22px;
+  color: var(--c-ink);
+}
+.title-tip {
+  margin-top: 22px;
+  font-size: clamp(12px, 3vw, 14px);
+  color: #6A4A2F;
+  line-height: 1.6;
+}
+
+/* ====== 大ボタン ====== */
+.big-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: inherit;
+  font-weight: 900;
+  font-size: clamp(20px, 5vw, 28px);
+  padding: 16px 32px;
+  border: var(--border);
+  border-radius: 999px;
+  background: var(--c-tomato);
+  color: white;
+  cursor: pointer;
+  box-shadow: var(--hard-shadow);
+  transition: transform 0.08s, box-shadow 0.08s;
+  -webkit-text-stroke: 0;
+}
+.big-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--c-ink);
+}
+.big-btn--start { background: var(--c-leaf); }
+.big-btn--history {
+  background: var(--c-sky);
+  font-size: clamp(16px, 4vw, 22px);
+  padding: 12px 26px;
+  margin-top: 14px;
+}
+.big-btn__icon { font-size: 1.3em; }
+
+/* ====== ステップ ヘッダー ====== */
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--c-cream);
+  border: var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  box-shadow: var(--hard-shadow-sm);
+  flex-wrap: wrap;
+}
+.step-num {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--c-sun);
+  border: var(--border);
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--c-ink);
+  box-shadow: var(--hard-shadow-sm);
+  flex-shrink: 0;
+}
+.step-title {
+  font-family: "Yusei Magic", inherit;
+  font-size: clamp(20px, 5vw, 28px);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+.step-hint {
+  width: 100%;
+  margin: 0;
+  font-size: 13px;
+  color: #6A4A2F;
+  font-weight: 700;
+}
+
+/* ====== 道具グリッド ====== */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.tool-card {
+  background: var(--c-cream);
+  border: var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 8px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--hard-shadow-sm);
+  transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+  position: relative;
+}
+.tool-card:hover { transform: translate(-2px, -2px); box-shadow: 0 7px 0 var(--c-ink); }
+.tool-card:active { transform: translate(0, 2px); box-shadow: 0 2px 0 var(--c-ink); }
+.tool-card.selected {
+  background: var(--c-sun);
+  transform: translate(0, 2px);
+  box-shadow: 0 2px 0 var(--c-ink);
+}
+.tool-card.selected::after {
+  content: "✓";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: var(--c-leaf);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: var(--border);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 900;
+  -webkit-text-stroke: 1px var(--c-ink);
+}
+
+.tool-icon {
+  font-size: 56px;
+  line-height: 1;
+  margin-bottom: 6px;
+  filter: drop-shadow(2px 3px 0 rgba(43, 27, 15, 0.25));
+}
+.tool-name { font-size: 15px; }
+.tool-time {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11px;
+  background: white;
+  border: 2px solid var(--c-ink);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+/* ====== ナビボタン ====== */
+.screen-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.nav-btn {
+  font-family: inherit;
+  font-weight: 800;
+  font-size: clamp(15px, 3.5vw, 18px);
+  padding: 12px 22px;
+  border: var(--border);
+  border-radius: 999px;
+  background: white;
+  color: var(--c-ink);
+  cursor: pointer;
+  box-shadow: var(--hard-shadow-sm);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.nav-btn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--c-ink);
+}
+.nav-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+}
+.nav-btn--primary { background: var(--c-leaf); color: white; -webkit-text-stroke: 0; }
+.nav-btn--start-cook {
+  background: var(--c-tomato);
+  color: white;
+  font-size: clamp(16px, 4vw, 22px);
+  padding: 14px 24px;
+  animation: shake-mild 1.6s infinite;
+}
+@keyframes shake-mild {
+  0%, 100% { transform: rotate(-1deg); }
+  50%      { transform: rotate(1deg); }
+}
+
+/* ====== 調理ステージ（道具+具材） ====== */
+.cook-stage {
+  display: grid;
+  place-items: center;
+  margin: 12px 0 18px;
+  min-height: 230px;
+}
+.cook-tool {
+  position: relative;
+  width: min(100%, 380px);
+  text-align: center;
+}
+.cook-tool__visual {
+  position: relative;
+  width: 280px;
+  max-width: 75vw;
+  aspect-ratio: 1 / 0.78;
+  margin: 0 auto;
+}
+/* 道具ビジュアル: HTML/CSSで調理器具を描画 */
+.tool-vis {
+  position: absolute;
+  inset: 0;
+}
+
+/* フライパン */
+.tool-vis--pan .body {
+  position: absolute;
+  left: 8%;
+  bottom: 18%;
+  width: 78%;
+  height: 60%;
+  background: #3a2820;
+  border: var(--border);
+  border-radius: 0 0 50% 50% / 0 0 80% 80%;
+  box-shadow: inset 0 -10px 0 rgba(255,255,255,0.1);
+}
+.tool-vis--pan .inner {
+  position: absolute;
+  left: 12%;
+  bottom: 35%;
+  width: 70%;
+  height: 22%;
+  background: #1a0f08;
+  border: 3px solid var(--c-ink);
+  border-radius: 50%;
+}
+.tool-vis--pan .handle {
+  position: absolute;
+  right: -2%;
+  top: 38%;
+  width: 30%;
+  height: 14%;
+  background: #6b4225;
+  border: var(--border);
+  border-radius: 8px;
+  transform: rotate(-8deg);
+}
+
+/* なべ */
+.tool-vis--pot .body {
+  position: absolute;
+  left: 14%;
+  bottom: 14%;
+  width: 72%;
+  height: 64%;
+  background: #c8c8d0;
+  border: var(--border);
+  border-radius: 14px 14px 28px 28px;
+  box-shadow: inset 0 -16px 0 rgba(0,0,0,0.12);
+}
+.tool-vis--pot .inner {
+  position: absolute;
+  left: 18%;
+  top: 18%;
+  width: 64%;
+  height: 22%;
+  background: #2a2a35;
+  border: 3px solid var(--c-ink);
+  border-radius: 50%;
+}
+.tool-vis--pot .handle-l, .tool-vis--pot .handle-r {
+  position: absolute;
+  top: 30%;
+  width: 14%;
+  height: 14%;
+  background: #2a2a35;
+  border: var(--border);
+  border-radius: 50%;
+}
+.tool-vis--pot .handle-l { left: 4%; }
+.tool-vis--pot .handle-r { right: 4%; }
+
+/* 土なべ */
+.tool-vis--donabe .body {
+  position: absolute;
+  left: 10%;
+  bottom: 14%;
+  width: 80%;
+  height: 56%;
+  background: #c4895c;
+  border: var(--border);
+  border-radius: 50% 50% 18px 18px / 28% 28% 18px 18px;
+  box-shadow: inset 0 -10px 0 rgba(0,0,0,0.15);
+}
+.tool-vis--donabe .inner {
+  position: absolute;
+  left: 16%;
+  top: 22%;
+  width: 68%;
+  height: 22%;
+  background: #3a2010;
+  border: 3px solid var(--c-ink);
+  border-radius: 50%;
+}
+.tool-vis--donabe .pattern {
+  position: absolute;
+  left: 14%;
+  bottom: 16%;
+  width: 72%;
+  height: 8%;
+  background: repeating-linear-gradient(90deg, #8b5a2a 0 8%, #c4895c 8% 16%);
+  border-bottom: 3px solid var(--c-ink);
+  border-top: 3px solid var(--c-ink);
+}
+
+/* 電子レンジ */
+.tool-vis--microwave .body {
+  position: absolute;
+  left: 8%;
+  bottom: 12%;
+  width: 84%;
+  height: 70%;
+  background: #e8e4d8;
+  border: var(--border);
+  border-radius: 14px;
+  box-shadow: inset -8px -8px 0 rgba(0,0,0,0.08);
+}
+.tool-vis--microwave .window {
+  position: absolute;
+  left: 14%;
+  top: 22%;
+  width: 56%;
+  height: 56%;
+  background: #2a3a44;
+  border: var(--border);
+  border-radius: 8px;
+}
+.tool-vis--microwave .panel {
+  position: absolute;
+  right: 12%;
+  top: 26%;
+  width: 14%;
+  height: 50%;
+  background: white;
+  border: 3px solid var(--c-ink);
+  border-radius: 6px;
+}
+.tool-vis--microwave .panel::before,
+.tool-vis--microwave .panel::after {
+  content: "";
+  position: absolute;
+  left: 20%;
+  width: 60%;
+  height: 6px;
+  background: var(--c-ink);
+  border-radius: 2px;
+}
+.tool-vis--microwave .panel::before { top: 18%; }
+.tool-vis--microwave .panel::after  { top: 38%; background: var(--c-tomato); }
+
+/* トースター */
+.tool-vis--toaster .body {
+  position: absolute;
+  left: 10%;
+  bottom: 14%;
+  width: 80%;
+  height: 60%;
+  background: #c14a3b;
+  border: var(--border);
+  border-radius: 14px;
+  box-shadow: inset 0 -10px 0 rgba(0,0,0,0.15);
+}
+.tool-vis--toaster .door {
+  position: absolute;
+  left: 16%;
+  top: 22%;
+  width: 68%;
+  height: 50%;
+  background: #2a1f1c;
+  border: var(--border);
+  border-radius: 8px;
+}
+.tool-vis--toaster .door::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  top: 14%;
+  width: 76%;
+  height: 6px;
+  background: rgba(255,180,80,0.5);
+  border-radius: 2px;
+  box-shadow: 0 16px 0 rgba(255,180,80,0.5), 0 32px 0 rgba(255,180,80,0.5);
+}
+.tool-vis--toaster .knob {
+  position: absolute;
+  right: 4%;
+  top: 38%;
+  width: 8%;
+  height: 16%;
+  background: #f4d03f;
+  border: var(--border);
+  border-radius: 50%;
+}
+
+/* 道具のなかみ表示 */
+.cook-tool__contents {
+  position: absolute;
+  left: 50%;
+  bottom: 30%;
+  transform: translateX(-50%);
+  width: 60%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 6px;
+  pointer-events: none;
+  min-height: 36px;
+  z-index: 4;
+}
+.cook-tool__contents .item-chip {
+  font-size: 32px;
+  filter: drop-shadow(1px 2px 0 rgba(0,0,0,0.3));
+  animation: pop-in 0.3s cubic-bezier(0.2, 1.5, 0.5, 1);
+  pointer-events: auto;
+  cursor: pointer;
+  position: relative;
+  padding: 2px 4px;
+  border-radius: 8px;
+  transition: transform 0.1s, background 0.15s;
+  user-select: none;
+}
+.cook-tool__contents .item-chip:hover {
+  background: rgba(255, 90, 78, 0.18);
+  transform: translateY(-3px) scale(1.08);
+}
+.cook-tool__contents .item-chip:hover::after {
+  content: "✕";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--c-tomato);
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--c-ink);
+  font-size: 12px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  -webkit-text-stroke: 0;
+}
+.cook-tool__contents .item-chip:active {
+  transform: scale(0.85);
+}
+.cook-tool__contents .item-chip.removing {
+  animation: chip-remove 0.35s ease-in forwards;
+  pointer-events: none;
+}
+@keyframes pop-in {
+  0%   { transform: scale(0) rotate(-30deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes chip-remove {
+  0%   { transform: translateY(0) rotate(0) scale(1);   opacity: 1; }
+  60%  { transform: translateY(-30px) rotate(20deg) scale(1.2); opacity: 0.8; }
+  100% { transform: translateY(60px) rotate(-30deg) scale(0.4); opacity: 0; }
+}
+
+/* ぜんぶもどすボタン */
+.reset-btn {
+  margin-top: 8px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 8px 16px;
+  background: white;
+  color: var(--c-ink);
+  border: 3px solid var(--c-ink);
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--c-ink);
+  transition: transform 0.08s, box-shadow 0.08s, opacity 0.15s;
+}
+.reset-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--c-ink);
+}
+.reset-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cook-tool__label {
+  margin-top: 12px;
+  font-size: 18px;
+  background: var(--c-sun);
+  border: var(--border);
+  border-radius: 999px;
+  padding: 6px 18px;
+  display: inline-block;
+  box-shadow: var(--hard-shadow-sm);
+}
+
+/* ドロップ可能な状態 */
+.cook-tool.drop-active .cook-tool__visual {
+  animation: shake-mild 0.4s infinite;
+}
+.cook-tool.drop-target .cook-tool__visual::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border: 4px dashed var(--c-leaf);
+  border-radius: var(--r-lg);
+  animation: dash-spin 1s linear infinite;
+}
+@keyframes dash-spin { to { background-position: 30px 0; } }
+
+/* ====== パレット（食材一覧） ====== */
+.palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 8px;
+  background: var(--c-cream);
+  border: var(--border);
+  border-radius: var(--r-lg);
+  padding: 12px;
+  box-shadow: var(--hard-shadow-sm);
+  max-height: 56vh;
+  overflow-y: auto;
+}
+
+.palette-cat-label {
+  grid-column: 1 / -1;
+  font-family: "Yusei Magic", "M PLUS Rounded 1c", sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--c-ink);
+  background: linear-gradient(90deg, var(--c-sun) 0%, transparent 80%);
+  border-left: 6px solid var(--c-tomato);
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-top: 6px;
+  -webkit-text-stroke: 0;
+}
+.palette-cat-label:first-child {
+  margin-top: 0;
+}
+
+.item-card {
+  background: white;
+  border: 3px solid var(--c-ink);
+  border-radius: 14px;
+  padding: 8px 4px;
+  text-align: center;
+  cursor: grab;
+  user-select: none;
+  position: relative;
+  box-shadow: 0 3px 0 var(--c-ink);
+  transition: transform 0.08s, box-shadow 0.08s;
+  touch-action: none;
+}
+.item-card:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--c-ink); }
+.item-card.dragging { opacity: 0.4; }
+.item-card.added::after {
+  content: attr(data-count);
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--c-tomato);
+  color: white;
+  border: 2px solid var(--c-ink);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  -webkit-text-stroke: 0.5px var(--c-ink);
+}
+.item-card .emoji {
+  font-size: 32px;
+  line-height: 1;
+  filter: drop-shadow(1px 2px 0 rgba(43,27,15,0.25));
+}
+.item-card .name {
+  display: block;
+  font-size: 11px;
+  margin-top: 2px;
+  font-weight: 700;
+}
+
+/* ドラッグ中のゴースト */
+.ghost-drag {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 56px;
+  filter: drop-shadow(2px 4px 0 rgba(0,0,0,0.4));
+  display: none;
+  transform: translate(-50%, -50%) scale(1.2) rotate(-6deg);
+}
+.ghost-drag.active { display: block; }
+
+/* ====== 時間設定 ====== */
+.time-card {
+  background: var(--c-cream);
+  border: var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 18px;
+  box-shadow: var(--hard-shadow-sm);
+  margin-bottom: 18px;
+}
+.time-display {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.time-value {
+  font-family: "Yusei Magic", sans-serif;
+  font-size: clamp(70px, 18vw, 120px);
+  color: var(--c-tomato);
+  text-shadow:
+    4px 4px 0 var(--c-ink),
+    -1px -1px 0 var(--c-ink),
+    1px -1px 0 var(--c-ink),
+    -1px 1px 0 var(--c-ink),
+    1px 1px 0 var(--c-ink);
+  line-height: 1;
+}
+.time-unit {
+  font-size: clamp(24px, 5vw, 36px);
+  margin-left: 6px;
+  color: var(--c-ink);
+}
+.time-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.time-btn {
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 18px;
+  width: 56px;
+  height: 50px;
+  border: var(--border);
+  border-radius: 14px;
+  background: white;
+  cursor: pointer;
+  box-shadow: var(--hard-shadow-sm);
+}
+.time-btn--minus { background: var(--c-sky); color: white; -webkit-text-stroke: 0; }
+.time-btn--plus  { background: var(--c-tomato); color: white; -webkit-text-stroke: 0; }
+.time-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--c-ink); }
+
+.time-slider {
+  flex: 1 1 200px;
+  height: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: white;
+  border: 3px solid var(--c-ink);
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+}
+.time-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--c-tomato);
+  border: 3px solid var(--c-ink);
+  cursor: pointer;
+}
+.time-slider::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--c-tomato);
+  border: 3px solid var(--c-ink);
+  cursor: pointer;
+}
+
+.time-meter {
+  position: relative;
+  height: 22px;
+  background: white;
+  border: 3px solid var(--c-ink);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.time-meter__zone--ok {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: rgba(76, 182, 104, 0.35);
+  border-left: 2px dashed var(--c-leaf);
+  border-right: 2px dashed var(--c-leaf);
+}
+.time-meter__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--c-sky), var(--c-sun) 50%, var(--c-tomato));
+  width: 0%;
+  transition: width 0.18s;
+}
+.time-hint {
+  text-align: center;
+  font-size: 14px;
+  margin: 0;
+  color: var(--c-ink);
+}
+
+/* ====== 調理中アニメ ====== */
+.screen--cooking { text-align: center; padding-top: 4vh; }
+.cooking-title {
+  font-family: "Yusei Magic", sans-serif;
+  font-size: clamp(26px, 6vw, 40px);
+  margin-bottom: 18px;
+  color: var(--c-tomato);
+  text-shadow: 3px 3px 0 var(--c-ink);
+  -webkit-text-stroke: 0;
+  animation: title-bounce 0.8s ease-in-out infinite;
+}
+@keyframes title-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.cooking-stage {
+  position: relative;
+  width: min(100%, 420px);
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+}
+.cooking-steam {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+}
+.cooking-steam span {
+  font-size: 36px;
+  animation: steam-up 2s ease-out infinite;
+  opacity: 0;
+}
+.cooking-steam span:nth-child(2) { animation-delay: 0.5s; }
+.cooking-steam span:nth-child(3) { animation-delay: 1s; }
+@keyframes steam-up {
+  0%   { transform: translateY(20px) scale(0.6); opacity: 0; }
+  30%  { opacity: 0.85; }
+  100% { transform: translateY(-80px) scale(1.4); opacity: 0; }
+}
+
+.cooking-tool {
+  position: relative;
+  width: 80%;
+  aspect-ratio: 1 / 0.8;
+  animation: cook-shake 0.45s ease-in-out infinite;
+}
+@keyframes cook-shake {
+  0%, 100% { transform: translate(0,0) rotate(-2deg); }
+  25%      { transform: translate(-3px, 1px) rotate(2deg); }
+  50%      { transform: translate(0, -2px) rotate(-1deg); }
+  75%      { transform: translate(3px, 1px) rotate(2deg); }
+}
+.cooking-tool__visual { position: absolute; inset: 0; }
+.cooking-tool__contents {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  width: 60%;
+}
+.cooking-tool__contents .item-chip {
+  font-size: 30px;
+  animation: bubble 1s ease-in-out infinite;
+}
+.cooking-tool__contents .item-chip:nth-child(2n) { animation-delay: 0.2s; }
+.cooking-tool__contents .item-chip:nth-child(3n) { animation-delay: 0.5s; }
+@keyframes bubble {
+  0%, 100% { transform: translateY(0) rotate(-4deg) scale(1); }
+  50%      { transform: translateY(-8px) rotate(8deg) scale(1.1); }
+}
+
+.cooking-fire {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  gap: 4px;
+}
+.cooking-fire span {
+  font-size: 32px;
+  animation: fire-flicker 0.4s ease-in-out infinite;
+}
+.cooking-fire span:nth-child(2n) { animation-delay: 0.1s; }
+.cooking-fire span:nth-child(3n) { animation-delay: 0.2s; }
+@keyframes fire-flicker {
+  0%, 100% { transform: scaleY(1) translateY(0); }
+  50%      { transform: scaleY(1.2) translateY(-3px); }
+}
+
+.cooking-timer {
+  margin-top: 24px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.cooking-timer__bar {
+  height: 28px;
+  background: white;
+  border: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.cooking-timer__fill {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--c-leaf), var(--c-sun), var(--c-tomato));
+  transition: width 0.1s linear;
+}
+.cooking-timer__text {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* ====== 結果画面 ====== */
+.screen--result { padding-top: 12px; }
+.result-card {
+  background: var(--c-cream);
+  border: var(--border);
+  border-radius: var(--r-xl);
+  padding: 30px 18px 22px;
+  box-shadow: var(--hard-shadow-lg);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.result-banner {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  background: var(--c-tomato);
+  color: white;
+  padding: 8px 28px;
+  font-family: "Yusei Magic", sans-serif;
+  font-size: clamp(20px, 5vw, 28px);
+  border: var(--border);
+  border-radius: 999px;
+  box-shadow: var(--hard-shadow-sm);
+  -webkit-text-stroke: 0;
+  z-index: 2;
+}
+.result-banner.fail { background: #4a4a4a; }
+
+/* 100点 きせきバナー & カード */
+.result-banner.miracle {
+  background: linear-gradient(
+    90deg,
+    #ff5a4e 0%, #ffb84d 20%, #ffe93b 40%,
+    #6bd96a 60%, #5cc8ff 80%, #c97bff 100%
+  );
+  background-size: 300% 100%;
+  font-size: clamp(18px, 4.5vw, 26px);
+  padding: 10px 22px;
+  animation: rainbow-shift 2s linear infinite, banner-bounce 0.6s ease-out;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+}
+@keyframes rainbow-shift {
+  0%   { background-position:   0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+@keyframes banner-bounce {
+  0%   { transform: translateX(-50%) rotate(-3deg) scale(0); }
+  60%  { transform: translateX(-50%) rotate(-3deg) scale(1.3); }
+  100% { transform: translateX(-50%) rotate(-3deg) scale(1); }
+}
+.result-card.miracle {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,235,150,0.6) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255,200,255,0.5) 0%, transparent 50%),
+    var(--c-cream);
+  animation: miracle-glow 2s ease-in-out infinite;
+}
+@keyframes miracle-glow {
+  0%, 100% { box-shadow: 0 8px 0 var(--c-ink), 0 0 0 6px rgba(255,217,61,0); }
+  50%      { box-shadow: 0 8px 0 var(--c-ink), 0 0 0 6px rgba(255,217,61,0.6); }
+}
+.result-card.miracle .result-dish__emoji {
+  animation: miracle-spin 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px gold) drop-shadow(2px 4px 0 rgba(0,0,0,0.3));
+}
+@keyframes miracle-spin {
+  0%, 100% { transform: rotate(-5deg) scale(1); }
+  50%      { transform: rotate(5deg) scale(1.1); }
+}
+
+.result-dish {
+  margin: 60px auto 14px;
+}
+.result-dish__plate {
+  width: 220px;
+  height: 220px;
+  margin: 0 auto;
+  background:
+    radial-gradient(circle at center, white 0% 40%, #ddd 41% 46%, white 47% 100%);
+  border: var(--border);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--hard-shadow-lg);
+  position: relative;
+  animation: dish-pop 0.6s cubic-bezier(0.18, 1.6, 0.5, 1);
+}
+@keyframes dish-pop {
+  0%   { transform: scale(0) rotate(-90deg); }
+  60%  { transform: scale(1.1) rotate(10deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.result-dish__emoji {
+  font-size: 130px;
+  line-height: 1;
+  filter: drop-shadow(3px 5px 0 rgba(0,0,0,0.25));
+}
+
+.result-card.fail .result-dish__emoji { filter: grayscale(0.7) drop-shadow(3px 5px 0 rgba(0,0,0,0.5)); }
+.result-card.fail { background: #f5e6d8; }
+
+.result-name {
+  font-family: "Yusei Magic", sans-serif;
+  font-size: clamp(28px, 7vw, 42px);
+  margin: 6px 0;
+  color: var(--c-ink);
+  -webkit-text-stroke: 0;
+}
+.result-recipe {
+  font-size: 14px;
+  margin: 4px 0 18px;
+  color: #6A4A2F;
+  line-height: 1.7;
+  white-space: pre-line;
+  text-align: left;
+  background: white;
+  border: 3px solid var(--c-ink);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 3px 0 var(--c-ink);
+}
+
+.result-judges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+  margin: 10px 0 18px;
+  text-align: left;
+}
+.judge {
+  background: white;
+  border: 3px solid var(--c-ink);
+  border-radius: 14px;
+  padding: 8px 10px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  box-shadow: 0 3px 0 var(--c-ink);
+  position: relative;
+  animation: judge-in 0.5s cubic-bezier(0.2, 1.4, 0.5, 1) both;
+}
+.judge:nth-child(1) { animation-delay: 0.3s; }
+.judge:nth-child(2) { animation-delay: 0.6s; }
+.judge:nth-child(3) { animation-delay: 0.9s; }
+@keyframes judge-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.8); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.judge__avatar {
+  font-size: 36px;
+  flex-shrink: 0;
+  filter: drop-shadow(1px 2px 0 rgba(0,0,0,0.2));
+}
+.judge__body { flex: 1; min-width: 0; }
+.judge__name { font-size: 12px; color: #6A4A2F; }
+.judge__comment { font-size: 13px; line-height: 1.4; }
+.judge__score {
+  align-self: center;
+  font-weight: 900;
+  font-size: 22px;
+  background: var(--c-sun);
+  border: 3px solid var(--c-ink);
+  border-radius: 12px;
+  padding: 4px 10px;
+  flex-shrink: 0;
+}
+
+.result-score {
+  background: var(--c-tomato);
+  color: white;
+  border: var(--border);
+  border-radius: var(--r-md);
+  padding: 14px;
+  margin: 16px auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  box-shadow: var(--hard-shadow-sm);
+  -webkit-text-stroke: 0;
+}
+.result-score__label { font-size: 14px; }
+.result-score__value {
+  font-family: "Yusei Magic", sans-serif;
+  font-size: clamp(40px, 10vw, 64px);
+  text-shadow: 2px 2px 0 var(--c-ink);
+  line-height: 1;
+}
+.result-score__max { font-size: 18px; opacity: 0.9; }
+
+.result-stars {
+  font-size: 32px;
+  margin: 0 0 16px;
+  letter-spacing: 6px;
+  filter: drop-shadow(1px 2px 0 rgba(0,0,0,0.3));
+}
+
+.result-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* 紙吹雪 */
+.confetti {
+  position: fixed;
+  top: -20px;
+  font-size: 22px;
+  pointer-events: none;
+  z-index: 8888;
+  animation: confetti-fall 2.4s linear forwards;
+}
+@keyframes confetti-fall {
+  0%   { transform: translateY(-20px) rotate(0); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0.7; }
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 480px) {
+  .palette { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+  .item-card .emoji { font-size: 28px; }
+  .item-card .name { font-size: 10px; }
+  .step-num { width: 42px; height: 42px; font-size: 22px; }
+  .tool-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+  .tool-icon { font-size: 44px; }
+}
+
+/* ====== 履歴画面 ====== */
+.nav-btn--danger {
+  background: #6a4a4a;
+  color: white;
+  -webkit-text-stroke: 0;
+}
+
+/* 統計エリア */
+.history-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.stat-card {
+  background: var(--c-cream);
+  border: var(--border);
+  border-radius: var(--r-md);
+  padding: 12px 10px;
+  text-align: center;
+  box-shadow: var(--hard-shadow-sm);
+  position: relative;
+}
+.stat-card__icon {
+  font-size: 28px;
+  margin-bottom: 4px;
+  filter: drop-shadow(1px 2px 0 rgba(43,27,15,0.25));
+}
+.stat-card__label {
+  font-size: 11px;
+  color: #6A4A2F;
+  margin-bottom: 2px;
+}
+.stat-card__value {
+  font-family: "Yusei Magic", sans-serif;
+  font-size: clamp(20px, 5vw, 28px);
+  color: var(--c-tomato);
+  -webkit-text-stroke: 0;
+  text-shadow: 2px 2px 0 var(--c-ink);
+  line-height: 1;
+}
+.stat-card--gold { background: var(--c-sun); }
+.stat-card--gold .stat-card__value { color: var(--c-ink); text-shadow: none; }
+
+/* 履歴リスト */
+.history-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.history-empty {
+  background: var(--c-cream);
+  border: var(--border);
+  border-radius: var(--r-lg);
+  padding: 40px 20px;
+  text-align: center;
+  box-shadow: var(--hard-shadow-sm);
+}
+.history-empty__icon {
+  font-size: 64px;
+  margin-bottom: 10px;
+  filter: drop-shadow(2px 3px 0 rgba(43,27,15,0.25));
+}
+.history-empty__text {
+  font-size: 16px;
+  color: #6A4A2F;
+  line-height: 1.6;
+}
+
+.history-item {
+  background: var(--c-cream);
+  border: var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px;
+  box-shadow: var(--hard-shadow-sm);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.history-item:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 0 7px 0 var(--c-ink);
+}
+.history-item:active {
+  transform: translate(0, 2px);
+  box-shadow: 0 2px 0 var(--c-ink);
+}
+.history-item.fail {
+  background: #f5e6d8;
+}
+.history-item.rare {
+  background: linear-gradient(135deg, #fff4d6 0%, #ffe89e 100%);
+}
+.history-item.rare::before {
+  content: "★レア★";
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  background: var(--c-tomato);
+  color: white;
+  border: 2px solid var(--c-ink);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 11px;
+  -webkit-text-stroke: 0;
+  box-shadow: 0 2px 0 var(--c-ink);
+}
+
+.history-item__plate {
+  width: 64px;
+  height: 64px;
+  background:
+    radial-gradient(circle at center, white 0% 40%, #ddd 41% 46%, white 47% 100%);
+  border: 3px solid var(--c-ink);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 0 var(--c-ink);
+}
+.history-item__emoji {
+  font-size: 36px;
+  filter: drop-shadow(1px 2px 0 rgba(0,0,0,0.25));
+}
+.history-item.fail .history-item__emoji {
+  filter: grayscale(0.7) drop-shadow(1px 2px 0 rgba(0,0,0,0.4));
+}
+
+.history-item__body {
+  min-width: 0;
+}
+.history-item__name {
+  font-family: "Yusei Magic", sans-serif;
+  font-size: clamp(16px, 4vw, 20px);
+  color: var(--c-ink);
+  -webkit-text-stroke: 0;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.history-item__meta {
+  font-size: 12px;
+  color: #6A4A2F;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.history-item__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.history-item__date {
+  font-size: 10px;
+  color: #8A6A4A;
+  margin-top: 2px;
+}
+
+.history-item__score {
+  background: var(--c-tomato);
+  color: white;
+  border: 3px solid var(--c-ink);
+  border-radius: 12px;
+  padding: 6px 10px;
+  text-align: center;
+  -webkit-text-stroke: 0;
+  flex-shrink: 0;
+  box-shadow: 0 3px 0 var(--c-ink);
+}
+.history-item.fail .history-item__score {
+  background: #6a4a4a;
+}
+.history-item__score-num {
+  font-family: "Yusei Magic", sans-serif;
+  font-size: 24px;
+  line-height: 1;
+  display: block;
+  text-shadow: 1px 1px 0 var(--c-ink);
+}
+.history-item__score-label {
+  font-size: 9px;
+  display: block;
+  margin-top: 2px;
+  opacity: 0.9;
+}
+
+/* 詳細モーダル */
+.history-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 27, 15, 0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+  padding: 20px;
+  animation: modal-fade-in 0.2s ease-out;
+}
+.history-modal.active { display: flex; }
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.history-modal__card {
+  background: var(--c-cream);
+  border: var(--border);
+  border-radius: var(--r-xl);
+  padding: 24px 18px;
+  box-shadow: var(--hard-shadow-lg);
+  max-width: 520px;
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modal-pop 0.4s cubic-bezier(0.18, 1.5, 0.5, 1);
+}
+@keyframes modal-pop {
+  from { opacity: 0; transform: scale(0.7) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.history-modal__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--c-ink);
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 3px 0 var(--c-ink);
+  z-index: 2;
+}
+.history-modal__close:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--c-ink);
+}
+
+.history-modal__plate {
+  width: 140px;
+  height: 140px;
+  margin: 8px auto 12px;
+  background:
+    radial-gradient(circle at center, white 0% 40%, #ddd 41% 46%, white 47% 100%);
+  border: var(--border);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--hard-shadow-sm);
+}
+.history-modal__emoji {
+  font-size: 80px;
+  filter: drop-shadow(2px 3px 0 rgba(0,0,0,0.25));
+}
+
+.history-modal__name {
+  font-family: "Yusei Magic", sans-serif;
+  font-size: clamp(22px, 6vw, 30px);
+  text-align: center;
+  margin: 0 0 4px;
+  -webkit-text-stroke: 0;
+}
+.history-modal__date {
+  text-align: center;
+  font-size: 12px;
+  color: #6A4A2F;
+  margin-bottom: 12px;
+}
+
+.history-modal__score-row {
+  background: var(--c-tomato);
+  color: white;
+  border: var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 14px;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  box-shadow: var(--hard-shadow-sm);
+  -webkit-text-stroke: 0;
+}
+.history-modal__score-row.fail { background: #6a4a4a; }
+.history-modal__score-row .num {
+  font-family: "Yusei Magic", sans-serif;
+  font-size: clamp(34px, 8vw, 48px);
+  text-shadow: 2px 2px 0 var(--c-ink);
+  line-height: 1;
+}
+.history-modal__score-row .max { font-size: 14px; opacity: 0.9; }
+.history-modal__stars {
+  text-align: center;
+  font-size: 26px;
+  letter-spacing: 4px;
+  margin-bottom: 14px;
+  filter: drop-shadow(1px 2px 0 rgba(0,0,0,0.3));
+}
+
+.detail-section {
+  background: white;
+  border: 3px solid var(--c-ink);
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 3px 0 var(--c-ink);
+}
+.detail-section__title {
+  font-size: 13px;
+  color: #6A4A2F;
+  margin-bottom: 6px;
+  font-weight: 900;
+}
+.detail-section__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.detail-chip {
+  background: var(--c-cream);
+  border: 2px solid var(--c-ink);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.detail-chip__emoji { font-size: 16px; }
+
+.detail-judges {
+  display: grid;
+  gap: 8px;
+}
+.detail-judge {
+  background: white;
+  border: 2px solid var(--c-ink);
+  border-radius: 12px;
+  padding: 6px 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.detail-judge__avatar { font-size: 24px; flex-shrink: 0; }
+.detail-judge__body { flex: 1; min-width: 0; }
+.detail-judge__name { font-size: 11px; color: #6A4A2F; }
+.detail-judge__comment { font-size: 13px; line-height: 1.4; }
+.detail-judge__score {
+  font-weight: 900;
+  font-size: 16px;
+  background: var(--c-sun);
+  border: 2px solid var(--c-ink);
+  border-radius: 8px;
+  padding: 2px 8px;
+}

@@ -189,6 +189,14 @@ body {
   padding: 12px 26px;
   margin-top: 14px;
 }
+.big-btn--continue {
+  background: var(--c-sun);
+  color: var(--c-ink);
+  font-size: clamp(16px, 4vw, 22px);
+  padding: 12px 26px;
+  margin-top: 14px;
+}
+.big-btn--continue[hidden] { display: none; }
 .big-btn__icon { font-size: 1.3em; }
 
 /* ====== ステップ ヘッダー ====== */
@@ -664,6 +672,46 @@ body {
   animation: dash-spin 1s linear infinite;
 }
 @keyframes dash-spin { to { background-position: 30px 0; } }
+
+/* 次の操作対象ハイライト: 何も入っていない時にドロップ先を脈動させる */
+.cook-tool.needs-target .cook-tool__visual {
+  animation: pulse-target 1.3s ease-in-out infinite;
+}
+.cook-tool.needs-target[data-hint]:not([data-hint=""]) .cook-tool__visual::after {
+  content: attr(data-hint);
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--c-sun);
+  border: 3px solid var(--c-ink);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: 0 3px 0 var(--c-ink);
+  animation: bobble 0.9s ease-in-out infinite;
+  z-index: 10;
+}
+@keyframes pulse-target {
+  0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 0 rgba(76, 182, 104, 0)); }
+  50%      { transform: scale(1.04); filter: drop-shadow(0 0 14px rgba(76, 182, 104, 0.55)); }
+}
+@keyframes bobble {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(-4px); }
+}
+
+/* つぎへボタンが押せるようになった瞬間のパルス */
+.nav-btn.ready-pulse:not(:disabled) {
+  animation: ready-pulse 0.7s ease-out 2;
+}
+@keyframes ready-pulse {
+  0%   { transform: scale(1);    box-shadow: var(--hard-shadow-sm); }
+  50%  { transform: scale(1.08); box-shadow: 0 10px 0 var(--c-ink); }
+  100% { transform: scale(1);    box-shadow: var(--hard-shadow-sm); }
+}
 
 /* ====== パレット（食材一覧） ====== */
 .palette {
@@ -1578,4 +1626,252 @@ body {
   border: 2px solid var(--c-ink);
   border-radius: 8px;
   padding: 2px 8px;
+}
+
+/* ============================================
+   チュートリアル オーバーレイ
+   ============================================ */
+.big-btn--howto {
+  background: var(--c-grape);
+  font-size: clamp(14px, 3.5vw, 18px);
+  padding: 10px 22px;
+  margin-top: 10px;
+}
+
+.tutorial-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 27, 15, 0.55);
+  z-index: 100;
+  place-items: center;
+  padding: 16px;
+  animation: fade-in 0.25s ease-out;
+  overflow-y: auto;
+}
+.tutorial-overlay.active { display: grid; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+.tutorial-card {
+  background: var(--c-cream);
+  border: var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--hard-shadow-lg);
+  padding: 24px 22px 22px;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  animation: screen-in 0.4s cubic-bezier(0.18, 0.95, 0.25, 1.25);
+}
+.tutorial-progress {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.tutorial-dot {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--c-ink);
+  border-radius: 50%;
+  background: white;
+  transition: background 0.2s, transform 0.2s;
+}
+.tutorial-dot.active { background: var(--c-tomato); transform: scale(1.35); }
+.tutorial-dot.done   { background: var(--c-leaf); }
+
+.tutorial-emoji {
+  font-size: 64px;
+  margin: 4px 0 6px;
+  filter: drop-shadow(2px 4px 0 rgba(43, 27, 15, 0.18));
+  animation: floaty 3s ease-in-out infinite;
+}
+.tutorial-card h3 {
+  font-size: clamp(20px, 5vw, 26px);
+  margin: 4px 0 10px;
+  color: var(--c-tomato);
+  text-shadow:
+    2px 2px 0 var(--c-ink),
+    -1px -1px 0 var(--c-ink),
+    1px -1px 0 var(--c-ink),
+    -1px 1px 0 var(--c-ink),
+    1px 1px 0 var(--c-ink);
+  -webkit-text-stroke: 0;
+}
+.tutorial-card p {
+  font-size: clamp(14px, 3.5vw, 16px);
+  color: var(--c-ink);
+  line-height: 1.6;
+  margin: 0 0 18px;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+.tutorial-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.tutorial-step[hidden] { display: none; }
+
+/* ============================================
+   トースト & 拒否シェイク & スコアカウントアップ
+   ============================================ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--c-ink);
+  color: white;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 15px;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  z-index: 200;
+  max-width: 90vw;
+  text-align: center;
+  -webkit-text-stroke: 0;
+}
+.toast.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.shake-deny {
+  animation: shake-deny 0.35s linear;
+}
+@keyframes shake-deny {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+.result-score__value.counting {
+  animation: score-bump 0.25s ease-out;
+}
+@keyframes score-bump {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+/* ============================================
+   スコアの ないわけ
+   ============================================ */
+.score-breakdown {
+  margin: 14px auto 8px;
+  padding: 10px 14px 12px;
+  background: rgba(255, 248, 220, 0.7);
+  border: 3px solid var(--c-ink);
+  border-radius: 14px;
+  max-width: 360px;
+  text-align: left;
+}
+.score-breakdown[hidden] { display: none; }
+.score-breakdown summary {
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--c-ink);
+  list-style: none;
+  user-select: none;
+  text-align: center;
+}
+.score-breakdown summary::-webkit-details-marker { display: none; }
+.score-breakdown summary::after {
+  content: ' ▼';
+  font-size: 11px;
+  color: #6A4A2F;
+}
+.score-breakdown[open] summary::after { content: ' ▲'; }
+.score-breakdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 6px;
+  font-size: 13px;
+}
+.score-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px dashed rgba(43, 27, 15, 0.18);
+}
+.score-breakdown li:last-child { border: 0; }
+.score-breakdown .lbl { color: var(--c-ink); }
+.score-breakdown .val {
+  font-weight: 900;
+  color: var(--c-leaf);
+  white-space: nowrap;
+}
+.score-breakdown .val.minus { color: var(--c-tomato); }
+.score-breakdown .val.neutral { color: var(--c-ink); }
+.score-tips {
+  font-size: 13px;
+  margin: 6px 0 0;
+  color: #6A4A2F;
+  line-height: 1.5;
+}
+
+/* ============================================
+   UI ポリッシュ: 押下感・テキスト溢れ対策・320px対応
+   ============================================ */
+
+/* 日本語の不自然な分断を抑え、長い名前は溢れずに改行 */
+body, .app, .judge__name, .judge__comment, .history-item__name,
+.history-item__date, .result-name, .step-title,
+.detail-chip, .detail-judge__name, .detail-judge__comment,
+.tutorial-card p, .stat-card__label {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
+
+/* min-width:0 を要するflex子要素に追加（テキスト溢れの定番対策） */
+.history-item__body,
+.result-card,
+.result-judges,
+.detail-judge__body { min-width: 0; }
+
+/* 結果料理名・履歴名は1〜2行で切り詰め、極端に長い名前にも耐える */
+.result-name {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+.history-item__name {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* ボタン押下感の強化（アクティブ時の影と色のニュアンス） */
+.nav-btn:active:not(:disabled),
+.big-btn:active,
+.tool-card:active,
+.reset-btn:active:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+/* 320px〜375pxの極小幅でもナビボタンがはみ出さない */
+@media (max-width: 360px) {
+  .app { padding: 14px 12px 32px; }
+  .step-header { padding: 12px 14px; gap: 10px; }
+  .step-num { width: 42px; height: 42px; font-size: 24px; }
+  .nav-btn { padding: 10px 14px; font-size: 14px; }
+  .big-btn { padding: 14px 22px; }
+  .tool-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .palette { grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)) !important; }
+  .judge { padding: 8px; gap: 6px; }
+  .judge__avatar { font-size: 30px; }
+  .judge__score { font-size: 18px; padding: 3px 8px; }
+  .toast { font-size: 13px; padding: 10px 16px; bottom: 16px; }
+  .tutorial-card { padding: 18px 16px 16px; }
 }

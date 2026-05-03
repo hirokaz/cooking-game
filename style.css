@@ -1996,3 +1996,39 @@ button,
   .reset-btn { padding: 10px 14px; font-size: 13px; }
   .title-actions .big-btn { width: 100%; }
 }
+
+/* タッチデバイス向け: スライダーのサムを大きく押しやすく */
+@media (pointer: coarse) {
+  .time-slider {
+    height: 18px;
+  }
+  .time-slider::-webkit-slider-thumb {
+    width: 38px;
+    height: 38px;
+  }
+  .time-slider::-moz-range-thumb {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+/* iOS のセーフエリア（ノッチ・ホームインジケーター）対応 */
+@supports (padding: max(0px)) {
+  .app {
+    padding-left:  max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-bottom: max(40px, calc(env(safe-area-inset-bottom) + 24px));
+  }
+  .toast {
+    bottom: max(24px, calc(env(safe-area-inset-bottom) + 12px));
+  }
+}
+
+/* キーボード操作時のフォーカスリング（kids 向けでも壊れた見た目を避ける） */
+button:focus-visible,
+.tool-card:focus-visible,
+.item-card:focus-visible,
+.history-item:focus-visible {
+  outline: 3px solid var(--c-sky);
+  outline-offset: 3px;
+}

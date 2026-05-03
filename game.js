@@ -441,7 +441,10 @@ function renderTools() {
     $$('.tool-card', grid).forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     state.tool = card.dataset.tool;
-    $('#btn-tool-next').disabled = false;
+    const next = $('#btn-tool-next');
+    const wasDisabled = next.disabled;
+    next.disabled = false;
+    pulseWhenEnabled(next, wasDisabled);
   });
 }
 
@@ -460,6 +463,41 @@ function setupCookStage(suffix) {
   $(`#cook-tool-visual-${suffix}`).innerHTML = buildToolVisual(state.tool);
   $(`#cook-tool-label-${suffix}`).textContent = `${tool.icon} ${tool.name}`;
   refreshContents(suffix);
+  updateTargetHint(suffix);
+}
+
+// ドロップ先（なべ等）を未追加のときにパルスで強調
+function updateTargetHint(suffix) {
+  const stage = $(`#cook-tool-${suffix}`);
+  if (!stage) return;
+  if (suffix === 'ing') {
+    if (state.ingredients.length === 0) {
+      stage.classList.add('needs-target');
+      stage.dataset.hint = 'ここに ぐざいを いれてね！';
+    } else {
+      stage.classList.remove('needs-target');
+      stage.dataset.hint = '';
+    }
+  } else {
+    // 調味料は任意なので軽い脈動のみ（ヒントテキストは出さない）
+    if (state.seasonings.length === 0) {
+      stage.classList.add('needs-target');
+      stage.dataset.hint = '';
+    } else {
+      stage.classList.remove('needs-target');
+      stage.dataset.hint = '';
+    }
+  }
+}
+
+// disabled→enabled の遷移時に「押せるよ！」のパルスを焚く
+function pulseWhenEnabled(btn, prevDisabled) {
+  if (!btn || btn.disabled) return;
+  if (!prevDisabled) return;
+  btn.classList.remove('ready-pulse');
+  void btn.offsetWidth; // reflow でアニメ再起動
+  btn.classList.add('ready-pulse');
+  setTimeout(() => btn.classList.remove('ready-pulse'), 1500);
 }
 
 function refreshContents(suffix) {
@@ -508,6 +546,7 @@ function refreshContents(suffix) {
           $('#btn-ing-next').disabled = state.ingredients.length === 0;
         }
         updateResetButtons();
+        updateTargetHint(suffix);
         locks.chipRemoving = false;
       }, 320);
     });
@@ -598,8 +637,12 @@ function attachItemHandlers(palette, stateKey) {
     updatePaletteCounts(palette, state[stateKey]);
     // ボタン状態
     if (stateKey === 'ingredients') {
-      $('#btn-ing-next').disabled = state.ingredients.length === 0;
+      const next = $('#btn-ing-next');
+      const wasDisabled = next.disabled;
+      next.disabled = state.ingredients.length === 0;
+      pulseWhenEnabled(next, wasDisabled);
     }
+    updateTargetHint(suffix);
   };
 
   // ポインターベースのドラッグ
@@ -724,6 +767,7 @@ $('#btn-reset-ing').addEventListener('click', () => {
     updatePaletteCounts($('#ingredient-palette'), state.ingredients);
     $('#btn-ing-next').disabled = true;
     updateResetButtons();
+    updateTargetHint('ing');
     locks.chipRemoving = false;
   }, 350 + chips.length * 30);
 });
@@ -745,6 +789,7 @@ $('#btn-reset-sea').addEventListener('click', () => {
     refreshContents('sea');
     updatePaletteCounts($('#seasoning-palette'), state.seasonings);
     updateResetButtons();
+    updateTargetHint('sea');
     locks.chipRemoving = false;
   }, 350 + seasoningChips.length * 30);
 });

@@ -1095,12 +1095,18 @@ function judgeCookingTime(idealOverride) {
   return                  { state: 'burnt',         msg: 'まっくろこげ' };
 }
 
-// 採点
+// 採点（内訳付きで返す）
 function calcScore(recipe, cookJudge) {
-  if (!recipe) return 30 + Math.floor(Math.random() * 20); // 30-49
+  const detail = { base: 0, cookAdj: 0, items: 0, luck: 0, isMiracle: false, total: 0 };
+  if (!recipe) {
+    detail.base = 30 + Math.floor(Math.random() * 20);
+    detail.total = detail.base;
+    return detail;
+  }
   let score = recipe.baseScore;
+  detail.base = recipe.baseScore;
 
-  // 焼き加減で増減
+  const beforeCook = score;
   switch (cookJudge.state) {
     case 'raw':         score = Math.floor(score * 0.25); break;
     case 'undercooked': score = Math.floor(score * 0.65); break;
@@ -1108,19 +1114,18 @@ function calcScore(recipe, cookJudge) {
     case 'overcooked':  score = Math.floor(score * 0.75); break;
     case 'burnt':       score = Math.floor(score * 0.2); break;
   }
+  detail.cookAdj = score - beforeCook;
 
-  // 食材数ボーナス(最大+4、控えめに)
   const totalItems = state.ingredients.length + state.seasonings.length;
-  score += Math.min(4, Math.floor(totalItems / 2));
+  detail.items = Math.min(4, Math.floor(totalItems / 2));
+  score += detail.items;
 
-  // ちょっとだけランダム (-2〜+2)
-  score += Math.floor(Math.random() * 5) - 2;
+  detail.luck = Math.floor(Math.random() * 5) - 2;
+  score += detail.luck;
 
-  // 通常は99点上限(100は奇跡)
   score = Math.max(0, Math.min(99, score));
 
   // ★100点は「奇跡」: rare3レシピ × perfect焼き × 高得点 × 約7%の運の四重条件
-  // 理論上の出現率: rare3でperfectでscore>=96でも約1/14、全プレイでは1〜2%程度
   if (
     recipe.rare === 3 &&
     cookJudge.state === 'perfect' &&
@@ -1128,9 +1133,11 @@ function calcScore(recipe, cookJudge) {
     Math.random() < 0.07
   ) {
     score = 100;
+    detail.isMiracle = true;
   }
 
-  return score;
+  detail.total = score;
+  return detail;
 }
 
 // ============ 結果表示 ============
@@ -1161,7 +1168,14 @@ function finishCooking() {
     else if (cookJudge.state === 'perfect' && recipe.rare === 2) banner = 'すごい！じょうずに できた！';
   }
 
-  const score = isFail ? Math.floor(Math.random() * 35) + 10 : calcScore(recipe, cookJudge);
+  let scoreDetail = null;
+  let score;
+  if (isFail) {
+    score = Math.floor(Math.random() * 35) + 10;
+  } else {
+    scoreDetail = calcScore(recipe, cookJudge);
+    score = scoreDetail.total;
+  }
 
   // 描画
   $('#result-emoji').textContent = finalDish.emoji;
@@ -1196,6 +1210,9 @@ function finishCooking() {
   // ★表示
   const stars = Math.round(score / 20);
   $('#result-stars').textContent = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+
+  // 点数の ないわけ（成功時のみ）
+  renderScoreBreakdown(scoreDetail, cookJudge, recipe, isFail);
 
   // しんさいん
   const judgesData = renderJudges(score, finalDish, isFail);
@@ -1241,6 +1258,52 @@ function finishCooking() {
 }
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+// スコアの ないわけ表示
+function renderScoreBreakdown(detail, cookJudge, recipe, isFail) {
+  const wrap = $('#score-breakdown');
+  const list = $('#score-breakdown-list');
+  const tips = $('#score-tips');
+  if (!wrap) return;
+  if (isFail || !detail || !recipe) {
+    wrap.hidden = true;
+    return;
+  }
+  wrap.hidden = false;
+  const fmt = (n) => (n > 0 ? '+' : '') + n + 'てん';
+  const items = [];
+  items.push({ lbl: `🍳 きほん（${recipe.name}）`, val: detail.base + 'てん', cls: 'neutral' });
+  if (detail.cookAdj !== 0) {
+    items.push({
+      lbl: `🔥 やきかげん（${cookJudge.msg}）`,
+      val: fmt(detail.cookAdj),
+      cls: detail.cookAdj < 0 ? 'minus' : ''
+    });
+  }
+  if (detail.items > 0) items.push({ lbl: '🥬 ぐざいの ボーナス', val: fmt(detail.items), cls: '' });
+  if (detail.luck !== 0) {
+    items.push({ lbl: '🎲 うん', val: fmt(detail.luck), cls: detail.luck < 0 ? 'minus' : '' });
+  }
+  if (recipe.rare === 3) items.push({ lbl: '⭐ レア レシピ', val: 'すごい！', cls: 'neutral' });
+  if (detail.isMiracle) items.push({ lbl: '🌟 きせきの ボーナス', val: '+α', cls: '' });
+  list.innerHTML = items.map(it =>
+    `<li><span class="lbl">${it.lbl}</span><span class="val ${it.cls}">${it.val}</span></li>`
+  ).join('');
+
+  // ヒント（次に活かせる助言）
+  let tip = '';
+  switch (cookJudge.state) {
+    case 'raw':         tip = '🤏 みじかすぎたよ。じかんを ながくしてみよう！'; break;
+    case 'undercooked': tip = '🤏 もう ちょっとだけ ながく やくと よさそう'; break;
+    case 'perfect':     tip = '✨ じかんは カンペキ！'; break;
+    case 'overcooked':  tip = '🤏 ちょっと ながすぎ。すこし みじかく しよう'; break;
+    case 'burnt':       tip = '🔥 ながすぎて こげちゃった。みじかめに しよう'; break;
+  }
+  if ((state.ingredients.length + state.seasonings.length) <= 1) {
+    tip += (tip ? ' ／ ' : '') + 'ぐざいを ふやすと ボーナスが もらえるよ';
+  }
+  tips.textContent = tip;
+}
 
 function renderJudges(score, dish, isFail) {
   const isMiracle = score === 100;

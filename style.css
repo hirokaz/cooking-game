@@ -1761,3 +1761,62 @@ body {
   50%  { transform: scale(1.18); }
   100% { transform: scale(1); }
 }
+
+/* ============================================
+   スコアの ないわけ
+   ============================================ */
+.score-breakdown {
+  margin: 14px auto 8px;
+  padding: 10px 14px 12px;
+  background: rgba(255, 248, 220, 0.7);
+  border: 3px solid var(--c-ink);
+  border-radius: 14px;
+  max-width: 360px;
+  text-align: left;
+}
+.score-breakdown[hidden] { display: none; }
+.score-breakdown summary {
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--c-ink);
+  list-style: none;
+  user-select: none;
+  text-align: center;
+}
+.score-breakdown summary::-webkit-details-marker { display: none; }
+.score-breakdown summary::after {
+  content: ' ▼';
+  font-size: 11px;
+  color: #6A4A2F;
+}
+.score-breakdown[open] summary::after { content: ' ▲'; }
+.score-breakdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 6px;
+  font-size: 13px;
+}
+.score-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px dashed rgba(43, 27, 15, 0.18);
+}
+.score-breakdown li:last-child { border: 0; }
+.score-breakdown .lbl { color: var(--c-ink); }
+.score-breakdown .val {
+  font-weight: 900;
+  color: var(--c-leaf);
+  white-space: nowrap;
+}
+.score-breakdown .val.minus { color: var(--c-tomato); }
+.score-breakdown .val.neutral { color: var(--c-ink); }
+.score-tips {
+  font-size: 13px;
+  margin: 6px 0 0;
+  color: #6A4A2F;
+  line-height: 1.5;
+}

@@ -189,6 +189,14 @@ body {
   padding: 12px 26px;
   margin-top: 14px;
 }
+.big-btn--continue {
+  background: var(--c-sun);
+  color: var(--c-ink);
+  font-size: clamp(16px, 4vw, 22px);
+  padding: 12px 26px;
+  margin-top: 14px;
+}
+.big-btn--continue[hidden] { display: none; }
 .big-btn__icon { font-size: 1.3em; }
 
 /* ====== ステップ ヘッダー ====== */

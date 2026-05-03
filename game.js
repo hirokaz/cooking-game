@@ -450,6 +450,78 @@ function goTo(name) {
   screens[name].classList.add('active');
   state.screen = name;
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  saveProgress();
+}
+
+// ============ 進行中ステートの保存/復帰 ============
+const PROGRESS_KEY = 'cookingGameProgress_v1';
+const RESTORABLE_SCREENS = ['tool', 'ingredient', 'seasoning', 'time'];
+
+function saveProgress() {
+  if (!STORAGE_OK) return;
+  if (!RESTORABLE_SCREENS.includes(state.screen)) return;
+  try {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify({
+      screen: state.screen,
+      tool: state.tool,
+      ingredients: state.ingredients,
+      seasonings: state.seasonings,
+      cookingTime: state.cookingTime,
+      ts: Date.now(),
+    }));
+  } catch (e) {}
+}
+function loadProgress() {
+  if (!STORAGE_OK) return null;
+  try {
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    if (!raw) return null;
+    const p = JSON.parse(raw);
+    if (!p || !RESTORABLE_SCREENS.includes(p.screen)) return null;
+    return p;
+  } catch (e) { return null; }
+}
+function clearProgress() {
+  if (!STORAGE_OK) return;
+  try { localStorage.removeItem(PROGRESS_KEY); } catch (e) {}
+}
+function refreshContinueButton() {
+  const btn = document.getElementById('btn-continue');
+  if (!btn) return;
+  btn.hidden = !loadProgress();
+}
+function restoreProgress(p) {
+  state.tool = p.tool || null;
+  state.ingredients = Array.isArray(p.ingredients) ? p.ingredients : [];
+  state.seasonings = Array.isArray(p.seasonings) ? p.seasonings : [];
+  state.cookingTime = typeof p.cookingTime === 'number' ? p.cookingTime : 5;
+
+  if (state.tool) {
+    $$('.tool-card').forEach(c => c.classList.toggle('selected', c.dataset.tool === state.tool));
+    $('#btn-tool-next').disabled = false;
+  }
+  switch (p.screen) {
+    case 'tool':
+      goTo('tool');
+      break;
+    case 'ingredient':
+      setupCookStage('ing');
+      renderPalette('ingredient-palette', INGREDIENTS, 'ingredients');
+      $('#btn-ing-next').disabled = state.ingredients.length === 0;
+      goTo('ingredient');
+      break;
+    case 'seasoning':
+      setupCookStage('sea');
+      renderPalette('seasoning-palette', SEASONINGS, 'seasonings');
+      goTo('seasoning');
+      break;
+    case 'time':
+      setupTime();
+      goTo('time');
+      break;
+    default:
+      goTo('title');
+  }
 }
 
 function getById(list, id) { return list.find(x => x.id === id); }
@@ -496,7 +568,20 @@ function renderTools() {
   });
 }
 
-$('#btn-start').addEventListener('click', () => goTo('tool'));
+$('#btn-start').addEventListener('click', () => {
+  // 「はじめる」は常に新規スタート
+  state.tool = null;
+  state.ingredients = [];
+  state.seasonings = [];
+  state.cookingTime = 5;
+  $('#btn-tool-next').disabled = true;
+  $$('.tool-card').forEach(c => c.classList.remove('selected'));
+  goTo('tool');
+});
+$('#btn-continue').addEventListener('click', () => {
+  const p = loadProgress();
+  if (p) restoreProgress(p);
+});
 $('#btn-tool-back').addEventListener('click', () => goTo('title'));
 $('#btn-tool-next').addEventListener('click', () => {
   setupCookStage('ing');
@@ -615,6 +700,7 @@ function refreshContents(suffix) {
         }
         updateResetButtons();
         updateTargetHint(suffix);
+        saveProgress();
         locks.chipRemoving = false;
       }, 320);
     });
@@ -719,6 +805,7 @@ function attachItemHandlers(palette, stateKey) {
       pulseWhenEnabled(next, wasDisabled);
     }
     updateTargetHint(suffix);
+    saveProgress();
     return true;
   };
 
@@ -843,6 +930,7 @@ $('#btn-reset-ing').addEventListener('click', () => {
     $('#btn-ing-next').disabled = true;
     updateResetButtons();
     updateTargetHint('ing');
+    saveProgress();
     locks.chipRemoving = false;
   }, 350 + chips.length * 30);
 });
@@ -865,6 +953,7 @@ $('#btn-reset-sea').addEventListener('click', () => {
     updatePaletteCounts($('#seasoning-palette'), state.seasonings);
     updateResetButtons();
     updateTargetHint('sea');
+    saveProgress();
     locks.chipRemoving = false;
   }, 350 + seasoningChips.length * 30);
 });
@@ -911,6 +1000,7 @@ function setTime(min) {
   $('#time-slider').value = state.cookingTime;
   $('#time-meter-fill').style.width = `${(state.cookingTime / 60) * 100}%`;
   updateTimeHint();
+  saveProgress();
 }
 
 $('#time-slider').addEventListener('input', e => setTime(parseInt(e.target.value, 10)));
@@ -1132,9 +1222,10 @@ function finishCooking() {
   };
   addHistoryRecord(record);
 
-  // 調理ロック解除（結果画面に到達したので再開可能）
+  // 進行ロックを解放し、進行中ステートはクリア
   locks.cooking = false;
   $('#btn-cook-start').disabled = false;
+  clearProgress();
 
   goTo('result');
 
@@ -1210,6 +1301,8 @@ $('#btn-again').addEventListener('click', () => {
   $('#btn-tool-next').disabled = true;
   $('#btn-ing-next').disabled = true;
   $$('.tool-card').forEach(c => c.classList.remove('selected'));
+  clearProgress();
+  refreshContinueButton();
   goTo('title');
 });
 
@@ -1449,4 +1542,5 @@ document.addEventListener('pointerdown', (e) => {
 // ============ 初期化 ============
 renderTools();
 goTo('title');
+refreshContinueButton();
 if (!hasSeenTutorial()) showTutorial();

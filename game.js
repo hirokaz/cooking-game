@@ -384,6 +384,12 @@ const state = {
   cookingTime: 5,
 };
 
+// 連打・二重発火を抑止する共有ロック
+const locks = {
+  chipRemoving: false, // chip 削除アニメ中
+  cooking: false,      // クッキングスタート中
+};
+
 // ============ ユーティリティ ============
 const $  = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -479,29 +485,30 @@ function refreshContents(suffix) {
     return `<span class="item-chip" data-statekey="${stateKey}" data-idx="${idx}" title="タップで とりだす">${it.emoji}</span>`;
   }).join('');
 
-  // chipクリックで個別削除
+  // chipクリックで個別削除（ロックで連打のレースを防止）
   $$('.item-chip', el).forEach(chip => {
     chip.addEventListener('click', e => {
       e.stopPropagation();
+      if (locks.chipRemoving) return;
+      if (chip.classList.contains('removing')) return;
+
       const sk = chip.dataset.statekey;
       const idx = parseInt(chip.dataset.idx, 10);
       if (Number.isNaN(idx) || !state[sk] || idx >= state[sk].length) return;
 
-      // 削除アニメ → state更新
+      locks.chipRemoving = true;
       chip.classList.add('removing');
       setTimeout(() => {
         state[sk].splice(idx, 1);
         refreshContents(suffix);
-        // パレット側のカウント更新
         const palId = sk === 'ingredients' ? 'ingredient-palette' : 'seasoning-palette';
         const pal = $(`#${palId}`);
         if (pal) updatePaletteCounts(pal, state[sk]);
-        // ボタン状態
         if (sk === 'ingredients') {
           $('#btn-ing-next').disabled = state.ingredients.length === 0;
         }
-        // ぜんぶもどすボタンの有効/無効
         updateResetButtons();
+        locks.chipRemoving = false;
       }, 320);
     });
   });
@@ -700,11 +707,13 @@ $('#btn-ing-next').addEventListener('click', () => {
   goTo('seasoning');
 });
 
-// ぜんぶもどす
+// ぜんぶもどす（連打中はロック）
 $('#btn-reset-ing').addEventListener('click', () => {
+  if (locks.chipRemoving) return;
   if (state.ingredients.length === 0) return;
-  // 全chipに削除アニメをかけてから一括クリア
   const chips = $$('#cook-tool-contents-ing .item-chip');
+  locks.chipRemoving = true;
+  $('#btn-reset-ing').disabled = true;
   chips.forEach((c, i) => {
     c.style.animationDelay = (i * 30) + 'ms';
     c.classList.add('removing');
@@ -715,15 +724,18 @@ $('#btn-reset-ing').addEventListener('click', () => {
     updatePaletteCounts($('#ingredient-palette'), state.ingredients);
     $('#btn-ing-next').disabled = true;
     updateResetButtons();
+    locks.chipRemoving = false;
   }, 350 + chips.length * 30);
 });
 
 $('#btn-reset-sea').addEventListener('click', () => {
+  if (locks.chipRemoving) return;
   if (state.ingredients.length === 0 && state.seasonings.length === 0) return;
   const chips = $$('#cook-tool-contents-sea .item-chip');
-  // 調味料画面では調味料のみリセット(食材は残す)
   const seasoningChips = chips.filter(c => c.dataset.statekey === 'seasonings');
   if (seasoningChips.length === 0) return;
+  locks.chipRemoving = true;
+  $('#btn-reset-sea').disabled = true;
   seasoningChips.forEach((c, i) => {
     c.style.animationDelay = (i * 30) + 'ms';
     c.classList.add('removing');
@@ -733,6 +745,7 @@ $('#btn-reset-sea').addEventListener('click', () => {
     refreshContents('sea');
     updatePaletteCounts($('#seasoning-palette'), state.seasonings);
     updateResetButtons();
+    locks.chipRemoving = false;
   }, 350 + seasoningChips.length * 30);
 });
 
@@ -789,6 +802,11 @@ $('#btn-cook-start').addEventListener('click', startCooking);
 
 // ============ Step5: 調理アニメ ============
 function startCooking() {
+  // 連打防止: 調理中は再起動できないようにロック
+  if (locks.cooking) return;
+  locks.cooking = true;
+  $('#btn-cook-start').disabled = true;
+
   // 調理画面準備
   $('#cooking-tool-visual').innerHTML = buildToolVisual(state.tool);
   const items = [...state.ingredients, ...state.seasonings];
@@ -993,6 +1011,10 @@ function finishCooking() {
     judges: judgesData,
   };
   addHistoryRecord(record);
+
+  // 調理ロック解除（結果画面に到達したので再開可能）
+  locks.cooking = false;
+  $('#btn-cook-start').disabled = false;
 
   goTo('result');
 

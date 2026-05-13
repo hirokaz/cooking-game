@@ -45,7 +45,7 @@ const INGREDIENTS = [
   { id: 'meat',     name: 'にく',           emoji: '🥩', cat: 'protein' },
   { id: 'chicken',  name: 'とりにく',      emoji: '🍗', cat: 'protein' },
   { id: 'fish',     name: 'さかな',         emoji: '🐟', cat: 'protein' },
-  { id: 'shrimp',   name: 'えび',           emoji: '🍤', cat: 'protein' },
+  { id: 'shrimp',   name: 'えび',           emoji: '🦐', cat: 'protein' },
   { id: 'squid',    name: 'いか',           emoji: '🦑', cat: 'protein' },
   { id: 'crab',     name: 'かに',           emoji: '🦀', cat: 'protein' },
   { id: 'octopus',  name: 'たこ',           emoji: '🐙', cat: 'protein' },
@@ -70,21 +70,30 @@ const ING_CATEGORIES = [
   { id: 'staple',  label: '🍚 おこめ・パン・めん' },
 ];
 
-// ちょうみりょう
+// ちょうみりょう（form: powder=粉/つぶ, liquid=えきたい, solid=かたまり/は）
 const SEASONINGS = [
-  { id: 'salt',    name: 'しお',         emoji: '🧂' },
-  { id: 'sugar',   name: 'さとう',      emoji: '🍬' },
-  { id: 'soy',     name: 'しょうゆ',    emoji: '🟫' },
-  { id: 'miso',    name: 'みそ',        emoji: '🟤' },
-  { id: 'ketchup', name: 'ケチャップ', emoji: '🍅' },
-  { id: 'butter',  name: 'バター',      emoji: '🧈' },
-  { id: 'black_pepper', name: 'こしょう', emoji: '⚫' },
-  { id: 'curry',   name: 'カレーこ',   emoji: '🌶️' },
-  { id: 'oil',     name: 'あぶら',      emoji: '🫗' },
-  { id: 'sake',    name: 'おさけ',      emoji: '🍶' },
-  { id: 'wine',    name: 'ワイン',      emoji: '🍷' },
-  { id: 'honey',   name: 'はちみつ',    emoji: '🍯' },
-  { id: 'herb',    name: 'ハーブ',      emoji: '🌿' },
+  { id: 'salt',         name: 'しお',         emoji: '🧂', form: 'powder' },
+  { id: 'sugar',        name: 'さとう',      emoji: '🍬', form: 'powder' },
+  { id: 'black_pepper', name: 'こしょう',    emoji: '⚫', form: 'powder' },
+  { id: 'curry',        name: 'カレーこ',   emoji: '🌶️', form: 'powder' },
+
+  { id: 'soy',     name: 'しょうゆ',    emoji: '🟫', form: 'liquid' },
+  { id: 'ketchup', name: 'ケチャップ', emoji: '🥫', form: 'liquid' },
+  { id: 'oil',     name: 'あぶら',      emoji: '🫗', form: 'liquid' },
+  { id: 'sake',    name: 'おさけ',      emoji: '🍶', form: 'liquid' },
+  { id: 'wine',    name: 'ワイン',      emoji: '🍷', form: 'liquid' },
+  { id: 'honey',   name: 'はちみつ',    emoji: '🍯', form: 'liquid' },
+
+  { id: 'miso',   name: 'みそ',    emoji: '🟤', form: 'solid' },
+  { id: 'butter', name: 'バター',  emoji: '🧈', form: 'solid' },
+  { id: 'herb',   name: 'ハーブ',  emoji: '🌿', form: 'solid' },
+];
+
+// 調味料のかたち別ラベル
+const SEA_CATEGORIES = [
+  { id: 'powder', label: '🧂 ふんまつ・つぶ' },
+  { id: 'liquid', label: '🫗 えきたい' },
+  { id: 'solid',  label: '🧈 かたまり・は' },
 ];
 
 /* レシピDB
@@ -707,6 +716,7 @@ function refreshContents(suffix) {
   });
 
   updateResetButtons();
+  if (suffix === 'sea') updateSeaNextLabel();
 }
 
 // ぜんぶもどすボタンの活性制御
@@ -717,32 +727,31 @@ function updateResetButtons() {
   if (seaBtn) seaBtn.disabled = state.seasonings.length === 0;
 }
 
+// Step3 ちょうみりょう画面の「つぎへ」ラベルを状態に応じて切り替える
+function updateSeaNextLabel() {
+  const btn = $('#btn-sea-next');
+  if (!btn) return;
+  btn.textContent = state.seasonings.length === 0 ? 'スキップ →' : 'つぎへ →';
+}
+
 // ============ Step2/3: パレット & ドラッグ ============
 function renderPalette(containerId, items, stateKey) {
   const palette = $(`#${containerId}`);
 
-  if (stateKey === 'ingredients') {
-    // 食材はカテゴリ見出し付きで表示
-    palette.innerHTML = ING_CATEGORIES.map(cat => {
-      const catItems = items.filter(it => it.cat === cat.id);
-      if (catItems.length === 0) return '';
-      const cardsHtml = catItems.map(it => `
-        <div class="item-card" data-id="${it.id}" data-emoji="${it.emoji}" data-name="${it.name}">
-          <span class="emoji">${it.emoji}</span>
-          <span class="name">${it.name}</span>
-        </div>
-      `).join('');
-      return `<div class="palette-cat-label">${cat.label}</div>${cardsHtml}`;
-    }).join('');
-  } else {
-    // 調味料はフラットに表示
-    palette.innerHTML = items.map(it => `
-      <div class="item-card" data-id="${it.id}" data-emoji="${it.emoji}" data-name="${it.name}">
+  // 食材・調味料ともにカテゴリ見出し付きで表示（統一感）
+  const categories = stateKey === 'ingredients' ? ING_CATEGORIES : SEA_CATEGORIES;
+  const catKey = stateKey === 'ingredients' ? 'cat' : 'form';
+  palette.innerHTML = categories.map(cat => {
+    const catItems = items.filter(it => it[catKey] === cat.id);
+    if (catItems.length === 0) return '';
+    const cardsHtml = catItems.map(it => `
+      <div class="item-card item-card--${stateKey === 'ingredients' ? 'ing' : 'sea-' + it.form}" data-id="${it.id}" data-emoji="${it.emoji}" data-name="${it.name}">
         <span class="emoji">${it.emoji}</span>
         <span class="name">${it.name}</span>
       </div>
     `).join('');
-  }
+    return `<div class="palette-cat-label">${cat.label}</div>${cardsHtml}`;
+  }).join('');
 
   updatePaletteCounts(palette, state[stateKey]);
   attachItemHandlers(palette, stateKey);

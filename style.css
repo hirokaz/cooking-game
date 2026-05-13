@@ -2032,3 +2032,20 @@ button:focus-visible,
   outline: 3px solid var(--c-sky);
   outline-offset: 3px;
 }
+
+/* ============================================
+   調味料カテゴリ別の色味
+   かたち（液体・粉・固体）が一目で分かるように
+   ============================================ */
+.item-card--sea-liquid {
+  background: linear-gradient(180deg, #ffffff 50%, #d6efff 100%);
+  border-color: #2B70B0;
+}
+.item-card--sea-powder {
+  background: linear-gradient(180deg, #ffffff 50%, #fff2c4 100%);
+  border-color: #B8861C;
+}
+.item-card--sea-solid {
+  background: linear-gradient(180deg, #ffffff 50%, #e2f3d6 100%);
+  border-color: #4B7A2A;
+}
